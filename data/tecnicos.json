@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "nombre": "Juan",
+    "apellido": "Pérez",
+    "telefono": "1144556677",
+    "email": "juan.tecnico@agrotec.com",
+    "especialidad": "Agronomía general"
+  },
+  {
+    "id": 2,
+    "nombre": "María",
+    "apellido": "Gómez",
+    "telefono": "1188990011",
+    "email": "maria.gomez@agrotec.com",
+    "especialidad": "Control de plagas"
+  }
+]

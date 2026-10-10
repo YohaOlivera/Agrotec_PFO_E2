@@ -1,0 +1,13 @@
+[
+  {
+    "id": 1,
+    "id_lote": 1,
+    "id_tecnico": 1,
+    "fecha": "2026-09-10",
+    "tipo_cultivo": "Soja",
+    "estado_cultivo": "En crecimiento",
+    "observaciones": "Se detectó leve sequía en el sector norte.",
+    "nivel_alerta": "Atención",
+    "activa": true
+  }
+]
