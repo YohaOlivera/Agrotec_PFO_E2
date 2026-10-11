@@ -1,32 +1,39 @@
+require("dotenv").config();
 const express = require("express");
 const path = require("path");
+const connectDB = require("./config/db");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Configurar el motor de vistas Pug
+// 1. Conexión a MongoDB
+connectDB();
+
+// 2. Configuración del motor de plantillas Pug
 app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "views"));
 
-// Middlewares para procesar JSON y formularios
+// 3. Middlewares para parsear JSON y formularios
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Importar rutas
+// 4. Rutas de la API REST
 const productoresRoutes = require("./routes/productoresRoutes");
 const lotesRoutes = require("./routes/lotesRoutes");
 const observacionesRoutes = require("./routes/observacionesRoutes");
 const tecnicosRoutes = require("./routes/tecnicosRoutes");
 const tiposCultivoRoutes = require("./routes/tiposCultivoRoutes");
 
-// Rutas principales
 app.use("/api/productores", productoresRoutes);
 app.use("/api/lotes", lotesRoutes);
 app.use("/api/observaciones", observacionesRoutes);
 app.use("/api/tecnicos", tecnicosRoutes);
 app.use("/api/tipos-cultivo", tiposCultivoRoutes);
 
-// Ruta de prueba
+// 5. Vistas Pug adaptadas a Mongoose (async/await)
+const Lote = require("./models/Lote");
+const Observacion = require("./models/Observacion");
+
 app.get("/", (req, res) => {
   res.render("index", {
     title: "AgroTec",
@@ -34,37 +41,49 @@ app.get("/", (req, res) => {
   });
 });
 
-// Rutas de Vistas (Front-end básico renderizado con Pug)
-const Lote = require("./models/Lote");
-const Observacion = require("./models/Observacion");
-
-app.get("/vista/lotes", (req, res) => {
-  const lotes = Lote.getAll();
-  res.render("lotes", { title: "Listado de Lotes", lotes });
+app.get("/vista/lotes", async (req, res) => {
+  try {
+    const lotes = await Lote.find().populate("id_productor");
+    res.render("lotes", { title: "Listado de Lotes", lotes });
+  } catch (error) {
+    res.status(500).send("Error al cargar la vista de lotes");
+  }
 });
 
-app.get("/vista/lotes/:id", (req, res) => {
-  const lote = Lote.getById(req.params.id);
-  if (!lote) return res.status(404).send("Lote no encontrado");
-  const observaciones = Observacion.getByLote(req.params.id);
-  res.render("lote_detalle", {
-    title: `Detalle del Lote ${lote.nombre_numero}`,
-    lote,
-    observaciones,
-  });
+app.get("/vista/lotes/:id", async (req, res) => {
+  try {
+    const lote = await Lote.findById(req.params.id).populate("id_productor");
+    if (!lote) {
+      return res.status(404).send("Lote no encontrado");
+    }
+
+    const observaciones = await Observacion.find({
+      id_lote: req.params.id,
+      activa: true,
+    }).populate("id_tecnico");
+
+    res.render("lote_detalle", {
+      title: `Detalle del Lote ${lote.nombre_numero}`,
+      lote,
+      observaciones,
+    });
+  } catch (error) {
+    res.status(500).send("Error al cargar el detalle del lote");
+  }
 });
 
-// Middleware de manejo de error 404
+// 6. Manejo de error 404 (Ruta no encontrada)
 app.use((req, res) => {
   res.status(404).json({ error: "Ruta no encontrada" });
 });
 
-// Middleware de manejo de errores globales
+// 7. Manejo global de errores (500)
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: "Error interno del servidor" });
 });
 
+// 8. Inicio del servidor
 app.listen(PORT, () => {
   console.log(`Servidor de AgroTec corriendo en http://localhost:${PORT}`);
 });
