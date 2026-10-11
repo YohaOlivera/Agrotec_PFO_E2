@@ -1,9 +1,10 @@
+const mongoose = require("mongoose");
 const Tecnico = require("../models/Tecnico");
 
 // GET /api/tecnicos
-exports.getAll = (req, res) => {
+exports.getAll = async (req, res) => {
   try {
-    const tecnicos = Tecnico.getAll();
+    const tecnicos = await Tecnico.find();
     res.status(200).json(tecnicos);
   } catch (error) {
     res.status(500).json({ error: "Error al obtener técnicos" });
@@ -11,11 +12,16 @@ exports.getAll = (req, res) => {
 };
 
 // GET /api/tecnicos/:id
-exports.getById = (req, res) => {
+exports.getById = async (req, res) => {
   try {
-    const tecnico = Tecnico.getById(req.params.id);
-    if (!tecnico)
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ error: "ID de técnico no válido" });
+    }
+
+    const tecnico = await Tecnico.findById(req.params.id);
+    if (!tecnico) {
       return res.status(404).json({ error: "Técnico no encontrado" });
+    }
     res.status(200).json(tecnico);
   } catch (error) {
     res.status(500).json({ error: "Error al obtener el técnico" });
@@ -23,10 +29,15 @@ exports.getById = (req, res) => {
 };
 
 // POST /api/tecnicos
-exports.create = (req, res) => {
+exports.create = async (req, res) => {
   try {
     const { nombre, apellido, telefono, email, especialidad } = req.body;
-    const nuevoTecnico = Tecnico.create({
+
+    if (!nombre || !apellido) {
+      return res.status(400).json({ error: "El nombre y el apellido son obligatorios" });
+    }
+
+    const nuevoTecnico = await Tecnico.create({
       nombre,
       apellido,
       telefono,
@@ -40,19 +51,24 @@ exports.create = (req, res) => {
 };
 
 // PUT /api/tecnicos/:id
-exports.update = (req, res) => {
+exports.update = async (req, res) => {
   try {
-    const { nombre, apellido, telefono, email, especialidad } = req.body;
-    const tecnicoActualizado = Tecnico.update(req.params.id, {
-      nombre,
-      apellido,
-      telefono,
-      email,
-      especialidad,
-    });
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ error: "ID de técnico no válido" });
+    }
 
-    if (!tecnicoActualizado)
+    const { nombre, apellido, telefono, email, especialidad } = req.body;
+
+    const tecnicoActualizado = await Tecnico.findByIdAndUpdate(
+      req.params.id,
+      { nombre, apellido, telefono, email, especialidad },
+      { new: true, runValidators: true }
+    );
+
+    if (!tecnicoActualizado) {
       return res.status(404).json({ error: "Técnico no encontrado" });
+    }
+
     res.status(200).json(tecnicoActualizado);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -60,11 +76,17 @@ exports.update = (req, res) => {
 };
 
 // DELETE /api/tecnicos/:id
-exports.delete = (req, res) => {
+exports.delete = async (req, res) => {
   try {
-    const eliminado = Tecnico.delete(req.params.id);
-    if (!eliminado)
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ error: "ID de técnico no válido" });
+    }
+
+    const eliminado = await Tecnico.findByIdAndDelete(req.params.id);
+    if (!eliminado) {
       return res.status(404).json({ error: "Técnico no encontrado" });
+    }
+
     res.status(200).json({ mensaje: "Técnico eliminado correctamente" });
   } catch (error) {
     res.status(500).json({ error: "Error al eliminar el técnico" });

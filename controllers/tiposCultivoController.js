@@ -1,60 +1,96 @@
+const mongoose = require("mongoose");
 const TipoCultivo = require("../models/TipoCultivo");
 
-exports.getAll = (req, res) => {
+// GET /api/tipos-cultivo
+exports.getAll = async (req, res) => {
   try {
-    const tipos = TipoCultivo.getAll();
+    const tipos = await TipoCultivo.find();
     res.status(200).json(tipos);
   } catch (error) {
     res.status(500).json({ error: "Error al obtener tipos de cultivo" });
   }
 };
 
-exports.getById = (req, res) => {
+// GET /api/tipos-cultivo/:id
+exports.getById = async (req, res) => {
   try {
-    const tipo = TipoCultivo.getById(req.params.id);
-    if (!tipo)
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ error: "ID de tipo de cultivo no válido" });
+    }
+
+    const tipo = await TipoCultivo.findById(req.params.id);
+    if (!tipo) {
       return res.status(404).json({ error: "Tipo de cultivo no encontrado" });
+    }
     res.status(200).json(tipo);
   } catch (error) {
     res.status(500).json({ error: "Error al obtener el tipo de cultivo" });
   }
 };
 
-exports.create = (req, res) => {
+// POST /api/tipos-cultivo
+exports.create = async (req, res) => {
   try {
     const { nombre } = req.body;
-    if (!nombre) {
-      return res.status(400).json({ error: "El nombre es obligatorio" });
+
+    if (!nombre || !nombre.trim()) {
+      return res.status(400).json({ error: "El nombre del cultivo es obligatorio" });
     }
 
-    const nuevoTipo = TipoCultivo.create({ nombre });
+    const nuevoTipo = await TipoCultivo.create({ nombre: nombre.trim() });
     res.status(201).json(nuevoTipo);
   } catch (error) {
-    res.status(500).json({ error: "Error al crear el tipo de cultivo" });
+    if (error.code === 11000) {
+      return res.status(400).json({ error: "El tipo de cultivo ya existe" });
+    }
+    res.status(400).json({ error: error.message });
   }
 };
 
-exports.update = (req, res) => {
+// PUT /api/tipos-cultivo/:id
+exports.update = async (req, res) => {
   try {
-    const { nombre } = req.body;
-    const tipoActualizado = TipoCultivo.update(req.params.id, { nombre });
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ error: "ID de tipo de cultivo no válido" });
+    }
 
-    if (!tipoActualizado)
+    const { nombre } = req.body;
+    if (!nombre || !nombre.trim()) {
+      return res.status(400).json({ error: "El nombre del cultivo es obligatorio" });
+    }
+
+    const tipoActualizado = await TipoCultivo.findByIdAndUpdate(
+      req.params.id,
+      { nombre: nombre.trim() },
+      { new: true, runValidators: true }
+    );
+
+    if (!tipoActualizado) {
       return res.status(404).json({ error: "Tipo de cultivo no encontrado" });
+    }
+
     res.status(200).json(tipoActualizado);
   } catch (error) {
-    res.status(500).json({ error: "Error al actualizar el tipo de cultivo" });
+    if (error.code === 11000) {
+      return res.status(400).json({ error: "El tipo de cultivo ya existe" });
+    }
+    res.status(400).json({ error: error.message });
   }
 };
 
-exports.delete = (req, res) => {
+// DELETE /api/tipos-cultivo/:id
+exports.delete = async (req, res) => {
   try {
-    const eliminado = TipoCultivo.delete(req.params.id);
-    if (!eliminado)
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ error: "ID de tipo de cultivo no válido" });
+    }
+
+    const eliminado = await TipoCultivo.findByIdAndDelete(req.params.id);
+    if (!eliminado) {
       return res.status(404).json({ error: "Tipo de cultivo no encontrado" });
-    res
-      .status(200)
-      .json({ mensaje: "Tipo de cultivo eliminado correctamente" });
+    }
+
+    res.status(200).json({ mensaje: "Tipo de cultivo eliminado correctamente" });
   } catch (error) {
     res.status(500).json({ error: "Error al eliminar el tipo de cultivo" });
   }
