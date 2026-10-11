@@ -1,26 +1,17 @@
-const JsonManager = require("./JsonManager");
-const db = new JsonManager("tipos_cultivo.json");
+const mongoose = require("mongoose");
 
-class TipoCultivo {
-  static getAll() {
-    return db.findAll();
+const tipoCultivoSchema = new mongoose.Schema(
+  {
+    nombre: {
+      type: String,
+      required: [true, "El nombre del cultivo es obligatorio"],
+      trim: true,
+      unique: true,
+    },
+  },
+  {
+    timestamps: true,
   }
+);
 
-  static getById(id) {
-    return db.findById(id);
-  }
-
-  static create(data) {
-    return db.create(data);
-  }
-
-  static update(id, data) {
-    return db.update(id, data);
-  }
-
-  static delete(id) {
-    return db.delete(id);
-  }
-}
-
-module.exports = TipoCultivo;
+module.exports = mongoose.model("TipoCultivo", tipoCultivoSchema);

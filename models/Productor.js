@@ -1,55 +1,36 @@
-const Persona = require("./Persona");
-const JsonManager = require("./JsonManager");
-const db = new JsonManager("productores.json");
+const mongoose = require("mongoose");
 
-class Productor extends Persona {
-  constructor(datos = {}) {
-    super(datos);
-    // Nombre del establacimiento
-    this.establecimiento = datos.establecimiento || "";
+const productorSchema = new mongoose.Schema(
+  {
+    nombre: {
+      type: String,
+      required: [true, "El nombre es obligatorio"],
+      trim: true,
+    },
+    apellido: {
+      type: String,
+      required: [true, "El apellido es obligatorio"],
+      trim: true,
+    },
+    telefono: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    email: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    establecimiento: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+  },
+  {
+    timestamps: true,
   }
+);
 
-  // Validación combinada (Persona + Productor)
-  validar() {
-    super.validar(); // Valida nombre y apellido
-    return true;
-  }
-
-  toJSON() {
-    return {
-      ...super.toJSON(),
-      establecimiento: this.establecimiento.trim()
-    };
-  }
-
-  // --- Métodos de persistencia ---
-  static getAll() {
-    return db.findAll();
-  }
-
-  static getById(id) {
-    return db.findById(id);
-  }
-
-  static create(data) {
-    const productor = new Productor(data);
-    productor.validar();
-    return db.create(productor.toJSON());
-  }
-
-  static update(id, data) {
-    const actual = db.findById(id);
-    if (!actual) return null;
-
-    const productor = new Productor({ ...actual, ...data });
-    productor.validar();
-
-    return db.update(id, productor.toJSON());
-  }
-
-  static delete(id) {
-    return db.delete(id);
-  }
-}
-
-module.exports = Productor;
+module.exports = mongoose.model("Productor", productorSchema);
