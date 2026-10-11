@@ -12,9 +12,9 @@
 
 | Recurso | Enlace |
 |---|---|
-| Carpeta de Drive | [Ver carpeta](https://drive.google.com/drive/folders/1nP6_cLk0gUn7UZyzWcVD0ra8DfMDtz7u?usp=drive_link) |
-| Repositorio GitHub | [Repo-Backend_2A (rama V.2.0)](https://github.com/LeonelDiaz225/Repo-Backend_2A.git) |
-| Video de presentación | [Ver video](https://drive.google.com/file/d/11ptcZBzg4-73S4NdhNjsyby75fSDdKb5/view?usp=drive_link) |
+| Carpeta de Drive | [Ver carpeta](modificar) |
+| Repositorio GitHub | [](https://cargarlink.com) |
+| Video de presentación | [Ver video](modificar) |
 
 ---
 
