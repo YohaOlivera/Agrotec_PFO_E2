@@ -4,6 +4,16 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
+    "start:prod": "node -e \"process.env.NODE_ENV='production'; require('./app')\"",
+    "migrate:create": "migrate-mongo create",
+    "migrate:up": "migrate-mongo up",
+    "migrate:down": "migrate-mongo down",
+    "migrate:status": "migrate-mongo status",
+    "migrate:up:prod": "cross-env NODE_ENV=production migrate-mongo up",
+    "migrate:down:prod": "cross-env NODE_ENV=production migrate-mongo down",
+    "migrate:status:prod": "cross-env NODE_ENV=production migrate-mongo status",
+    "seed": "node scripts/seed.js",
+    "seed:prod": "cross-env NODE_ENV=production node scripts/seed.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
@@ -11,5 +21,9 @@
     "express": "^5.2.1",
     "mongoose": "^9.11.1",
     "pug": "^3.0.4"
+  },
+  "devDependencies": {
+    "cross-env": "^10.1.0",
+    "migrate-mongo": "^14.0.7"
   }
 }

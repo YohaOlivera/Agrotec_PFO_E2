@@ -5,7 +5,7 @@
 
 <p align="center">
   <strong>Sistema de Monitoreo de Lotes Agrícolas</strong><br>
-  Backend REST desarrollado con Node.js + Express + persistencia en JSON
+  Backend REST desarrollado con Node.js + Express + persistencia en MongoDB
 </p>
 
 ## Enlaces del proyecto
@@ -71,8 +71,9 @@ Esta solución **centraliza los datos**, garantiza la **integridad referencial**
 | **Node.js** | Entorno de ejecución del servidor |
 | **Express.js** | Framework para la API REST, ruteo modular y middlewares |
 | **Pug** | Motor de plantillas server-side para vistas básicas |
-| **fs / path** (nativos de Node) | Lectura/escritura de archivos JSON y manejo de rutas |
-| **JSON** | Formato de persistencia local |
+| **MongoDB** | Base de datos documental |
+| **Mongoose** | Modelos, validación y acceso a MongoDB |
+| **path** (nativo de Node) | Manejo de rutas |
 | **JavaScript ES6+ (CommonJS)** | POO, herencia y modularización |
 | **npm** | Gestión de dependencias y scripts |
 | **Postman / Thunder Client** | Testing manual de endpoints |
@@ -85,16 +86,16 @@ Esta solución **centraliza los datos**, garantiza la **integridad referencial**
 El proyecto sigue un patrón **MVC (Modelo – Vista – Controlador)** complementado con principios de **Programación Orientada a Objetos**:
 
 - **Clase base `Persona`** → heredada por `Productor` y `Tecnico`
-- **Clase genérica `JsonManager`** → capa transversal de persistencia (lectura/escritura/IDs incrementales)
-- **Modelos de dominio** (`Lote`, `Observacion`, `TipoCultivo`) → encapsulan validaciones propias
+- **Mongoose** → capa de persistencia y validación de esquemas en MongoDB
+- **Modelos** (`Lote`, `Observacion`, `TipoCultivo`, entre otros) → definen los documentos de la aplicación
 
 | Elemento | Función |
 |---|---|
 | `app.js` | Configura Express, Pug, middlewares, rutas, manejo de errores e inicio del servidor |
 | `routes/` | Define endpoints y métodos HTTP por recurso |
 | `controllers/` | Procesa peticiones, valida datos y devuelve respuestas HTTP |
-| `models/` | Clases del sistema + lógica de acceso/persistencia |
-| `data/` | Archivos JSON de persistencia local |
+| `models/` | Esquemas Mongoose y lógica de acceso a MongoDB |
+| `data/` | Datos JSON heredados |
 | `views/` | Plantillas Pug para las vistas del navegador |
 | `package.json` | Metadatos, scripts y dependencias |
 
@@ -161,7 +162,17 @@ cd Repo-Backend_2A
 npm install
 ```
 
-### 3. Ejecutar el servidor
+### 3. Crear el archivo de entorno
+
+Para desarrollo, copia la plantilla y ajusta `MONGO_URI` según tu instalación de MongoDB:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+`.env` es local y no debe subirse a Git. La plantilla usa MongoDB local (`127.0.0.1`).
+
+### 4. Ejecutar el servidor en desarrollo
 
 ```bash
 npm start
@@ -173,11 +184,54 @@ El servidor quedará disponible en:
 http://localhost:3000
 ```
 
+Para producción, crea `prod.env` desde su plantilla y reemplaza el usuario, la clave y el hostname por los datos de conexión de Atlas:
+
+```powershell
+Copy-Item prod.env.example prod.env
+```
+
+Codifica los caracteres especiales de la contraseña para usarlos en la URI. `prod.env` tampoco se sube a Git. Luego inicia la aplicación con:
+
+```bash
+npm run start:prod
+```
+
+### Migraciones de MongoDB
+
+Las migraciones se administran con `migrate-mongo`. En desarrollo, los comandos cargan `.env`; los comandos con sufijo `:prod` cargan `prod.env`. Ambos usan `MONGO_DB_NAME` si está definido y, de lo contrario, la base `agrotec`.
+
+```bash
+# Crear una migración nueva
+npm run migrate:create -- agregar-campo
+
+# Aplicar, revertir la última o consultar el estado en desarrollo
+npm run migrate:up
+npm run migrate:down
+npm run migrate:status
+
+# Aplicar o consultar migraciones en producción
+npm run migrate:up:prod
+npm run migrate:status:prod
+```
+
+La migración inicial crea las colecciones de los modelos que todavía no existan y aplica el índice único del nombre del tipo de cultivo. Si ya hay nombres duplicados, MongoDB rechazará ese índice y habrá que resolver los duplicados antes de reintentar. Su reversión no elimina colecciones, índices ni datos. Ejecutá las migraciones de producción solo cuando quieras modificar esa base.
+
+Para cargar los datos JSON de `data/` en MongoDB, primero puedes validar su formato y referencias y luego ejecutar el seed:
+
+```bash
+node scripts/seed.js --check
+npm run migrate:up:prod
+npm run seed
+npm run seed:prod
+```
+
+El seed es idempotente: puedes ejecutarlo de nuevo para actualizar los registros que administra sin vaciar colecciones ni eliminar otros documentos. Usa identificadores estables para productores, técnicos, lotes y observaciones; los tipos de cultivo se actualizan por nombre. Antes de ejecutarlo contra producción, verifica la conexión y la base seleccionada.
+
 ---
 
 ## Modelo de datos
 
-Los datos se almacenan localmente en archivos JSON dentro de `data/`. La clase `JsonManager` se encarga de leer, escribir y generar IDs incrementales de forma **sincrónica** (`readFileSync` / `writeFileSync`).
+La aplicación actual persiste los datos en MongoDB mediante los modelos Mongoose. Los archivos JSON de `data/` y sus ejemplos de abajo describen el formato heredado; no son importados automáticamente. Las migraciones de esquema se gestionan con `migrate-mongo`.
 
 ### `productores.json`
 
@@ -519,7 +573,6 @@ El registro permanece en `observaciones.json` con `activa: false`.
 - **Autenticación y autorización** con roles (administrador, productor, técnico) mediante JWT
 - **Módulo de estadísticas y reportes** (métricas por lote, exportación a PDF/Excel)
 - **Geolocalización de lotes** con mapas interactivos
-- **Migración de persistencia a MongoDB**
 - **Middlewares dedicados de validación** (reemplazando las validaciones actuales en controllers)
 
 ---
