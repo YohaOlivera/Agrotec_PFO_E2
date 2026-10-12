@@ -166,6 +166,8 @@ const main = async () => {
     throw new Error(`MONGO_URI debe estar definido en ${envFile}`);
   }
 
+  require("../config/mongo-dns")();
+
   try {
     await mongoose.connect(process.env.MONGO_URI, {
       dbName: process.env.MONGO_DB_NAME || "agrotec",

@@ -14,6 +14,8 @@ if (!process.env.MONGO_URI) {
   throw new Error(`MONGO_URI must be set in ${envFile}`);
 }
 
+require("./config/mongo-dns")();
+
 module.exports = {
   mongodb: {
     url: process.env.MONGO_URI,
