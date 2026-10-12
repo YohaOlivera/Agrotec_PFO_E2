@@ -6,11 +6,34 @@ require("dotenv").config({
     process.env.NODE_ENV === "production" ? "prod.env" : ".env"
   ),
 });
+
 const express = require("express");
+const swaggerUi = require("swagger-ui-express");
+const swaggerJSDoc = require("swagger-jsdoc");
 const connectDB = require("./config/db");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// 0. Documentación OpenAPI
+const swaggerSpec = swaggerJSDoc({
+  definition: {
+    openapi: "3.0.3",
+    info: {
+      title: "Agrotec API",
+      version: "1.0.0",
+      description:
+        "API REST para administrar productores, técnicos, cultivos, lotes y observaciones agrícolas.",
+    },
+    servers: [{ url: "/", description: "Servidor actual" }],
+  },
+  apis: [path.join(__dirname, "controllers", "*.js").replace(/\\/g, "/")],
+});
+
+app.get("/api-docs.json", (req, res) => {
+  res.json(swaggerSpec);
+});
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // 1. Configuración del motor de plantillas Pug
 app.set("view engine", "pug");

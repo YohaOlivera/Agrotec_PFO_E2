@@ -4,7 +4,107 @@ const Lote = require("../models/Lote");
 const Tecnico = require("../models/Tecnico");
 const TipoCultivo = require("../models/TipoCultivo");
 
-// GET /api/observaciones
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     Observacion:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           $ref: '#/components/schemas/ObjectId'
+ *         id_lote:
+ *           $ref: '#/components/schemas/ObjectId'
+ *         id_tecnico:
+ *           $ref: '#/components/schemas/ObjectId'
+ *         fecha:
+ *           type: string
+ *           format: date-time
+ *         tipo_cultivo:
+ *           type: string
+ *           example: Soja
+ *         estado_cultivo:
+ *           type: string
+ *           example: En crecimiento
+ *         observaciones:
+ *           type: string
+ *           example: Se detectó leve sequía en el sector norte.
+ *         nivel_alerta:
+ *           type: string
+ *           enum: [Normal, Atención, Crítico]
+ *         activa:
+ *           type: boolean
+ *           default: true
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *         __v:
+ *           type: integer
+ *     ObservacionPopulada:
+ *       allOf:
+ *         - $ref: '#/components/schemas/Observacion'
+ *         - type: object
+ *           properties:
+ *             id_lote:
+ *               $ref: '#/components/schemas/Lote'
+ *             id_tecnico:
+ *               $ref: '#/components/schemas/Tecnico'
+ *     ObservacionConTecnico:
+ *       allOf:
+ *         - $ref: '#/components/schemas/Observacion'
+ *         - type: object
+ *           properties:
+ *             id_tecnico:
+ *               $ref: '#/components/schemas/Tecnico'
+ *     ObservacionInput:
+ *       type: object
+ *       required: [id_lote, id_tecnico, fecha, tipo_cultivo, nivel_alerta]
+ *       properties:
+ *         id_lote:
+ *           $ref: '#/components/schemas/ObjectId'
+ *         id_tecnico:
+ *           $ref: '#/components/schemas/ObjectId'
+ *         fecha:
+ *           type: string
+ *           format: date-time
+ *         tipo_cultivo:
+ *           type: string
+ *           example: Soja
+ *         estado_cultivo:
+ *           type: string
+ *         observaciones:
+ *           type: string
+ *         nivel_alerta:
+ *           type: string
+ *           enum: [Normal, Atención, Crítico]
+ */
+
+/**
+ * @openapi
+ * /api/observaciones:
+ *   get:
+ *     tags: [Observaciones]
+ *     summary: Listar observaciones activas
+ *     operationId: listObservaciones
+ *     responses:
+ *       '200':
+ *         description: Observaciones activas con lote y técnico poblados
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/ObservacionPopulada'
+ *       '500':
+ *         description: Error al obtener observaciones
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 exports.getAll = async (req, res) => {
   try {
     const observaciones = await Observacion.find({ activa: true })
@@ -16,7 +116,45 @@ exports.getAll = async (req, res) => {
   }
 };
 
-// GET /api/observaciones/:id
+/**
+ * @openapi
+ * /api/observaciones/{id}:
+ *   get:
+ *     tags: [Observaciones]
+ *     summary: Obtener observación activa por ID
+ *     operationId: getObservacionById
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           $ref: '#/components/schemas/ObjectId'
+ *     responses:
+ *       '200':
+ *         description: Observación con lote y técnico poblados
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ObservacionPopulada'
+ *       '400':
+ *         description: ID de observación no válido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       '404':
+ *         description: Observación no encontrada o inactiva
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       '500':
+ *         description: Error al obtener la observación
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 exports.getById = async (req, res) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
@@ -37,7 +175,33 @@ exports.getById = async (req, res) => {
   }
 };
 
-// POST /api/observaciones
+/**
+ * @openapi
+ * /api/observaciones:
+ *   post:
+ *     tags: [Observaciones]
+ *     summary: Crear observación
+ *     operationId: createObservacion
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ObservacionInput'
+ *     responses:
+ *       '201':
+ *         description: Observación creada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Observacion'
+ *       '400':
+ *         description: Datos requeridos, referencias o valores no válidos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 exports.create = async (req, res) => {
   try {
     const {
@@ -196,7 +360,46 @@ exports.update = async (req, res) => {
   }
 };
 
-// DELETE /api/observaciones/:id (Soft delete: conserva historial)
+/**
+ * @openapi
+ * /api/observaciones/{id}:
+ *   delete:
+ *     tags: [Observaciones]
+ *     summary: Dar de baja una observación
+ *     description: La marca como inactiva y conserva el registro en el historial.
+ *     operationId: deactivateObservacion
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           $ref: '#/components/schemas/ObjectId'
+ *     responses:
+ *       '200':
+ *         description: Observación dada de baja
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Message'
+ *       '400':
+ *         description: ID de observación no válido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       '404':
+ *         description: Observación no encontrada o inactiva
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       '500':
+ *         description: Error al eliminar la observación
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 exports.delete = async (req, res) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {

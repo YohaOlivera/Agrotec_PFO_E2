@@ -1,7 +1,58 @@
 const mongoose = require("mongoose");
 const TipoCultivo = require("../models/TipoCultivo");
 
-// GET /api/tipos-cultivo
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     TipoCultivo:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           $ref: '#/components/schemas/ObjectId'
+ *         nombre:
+ *           type: string
+ *           example: Soja
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *         __v:
+ *           type: integer
+ *     TipoCultivoInput:
+ *       type: object
+ *       required: [nombre]
+ *       properties:
+ *         nombre:
+ *           type: string
+ *           example: Soja
+ */
+
+/**
+ * @openapi
+ * /api/tipos-cultivo:
+ *   get:
+ *     tags: [Tipos de cultivo]
+ *     summary: Listar tipos de cultivo
+ *     operationId: listTiposCultivo
+ *     responses:
+ *       '200':
+ *         description: Tipos de cultivo encontrados
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/TipoCultivo'
+ *       '500':
+ *         description: Error al obtener tipos de cultivo
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 exports.getAll = async (req, res) => {
   try {
     const tipos = await TipoCultivo.find();
@@ -11,7 +62,45 @@ exports.getAll = async (req, res) => {
   }
 };
 
-// GET /api/tipos-cultivo/:id
+/**
+ * @openapi
+ * /api/tipos-cultivo/{id}:
+ *   get:
+ *     tags: [Tipos de cultivo]
+ *     summary: Obtener tipo de cultivo por ID
+ *     operationId: getTipoCultivoById
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           $ref: '#/components/schemas/ObjectId'
+ *     responses:
+ *       '200':
+ *         description: Tipo de cultivo encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/TipoCultivo'
+ *       '400':
+ *         description: ID de tipo de cultivo no válido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       '404':
+ *         description: Tipo de cultivo no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       '500':
+ *         description: Error al obtener el tipo de cultivo
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 exports.getById = async (req, res) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
@@ -28,7 +117,33 @@ exports.getById = async (req, res) => {
   }
 };
 
-// POST /api/tipos-cultivo
+/**
+ * @openapi
+ * /api/tipos-cultivo:
+ *   post:
+ *     tags: [Tipos de cultivo]
+ *     summary: Crear tipo de cultivo
+ *     operationId: createTipoCultivo
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/TipoCultivoInput'
+ *     responses:
+ *       '201':
+ *         description: Tipo de cultivo creado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/TipoCultivo'
+ *       '400':
+ *         description: Nombre ausente, inválido o duplicado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 exports.create = async (req, res) => {
   try {
     const { nombre } = req.body;
@@ -47,7 +162,45 @@ exports.create = async (req, res) => {
   }
 };
 
-// PUT /api/tipos-cultivo/:id
+/**
+ * @openapi
+ * /api/tipos-cultivo/{id}:
+ *   put:
+ *     tags: [Tipos de cultivo]
+ *     summary: Actualizar tipo de cultivo
+ *     operationId: updateTipoCultivo
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           $ref: '#/components/schemas/ObjectId'
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/TipoCultivoInput'
+ *     responses:
+ *       '200':
+ *         description: Tipo de cultivo actualizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/TipoCultivo'
+ *       '400':
+ *         description: ID o nombre inválido, o nombre duplicado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       '404':
+ *         description: Tipo de cultivo no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 exports.update = async (req, res) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
@@ -78,7 +231,45 @@ exports.update = async (req, res) => {
   }
 };
 
-// DELETE /api/tipos-cultivo/:id
+/**
+ * @openapi
+ * /api/tipos-cultivo/{id}:
+ *   delete:
+ *     tags: [Tipos de cultivo]
+ *     summary: Eliminar tipo de cultivo
+ *     operationId: deleteTipoCultivo
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           $ref: '#/components/schemas/ObjectId'
+ *     responses:
+ *       '200':
+ *         description: Tipo de cultivo eliminado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Message'
+ *       '400':
+ *         description: ID de tipo de cultivo no válido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       '404':
+ *         description: Tipo de cultivo no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       '500':
+ *         description: Error al eliminar el tipo de cultivo
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 exports.delete = async (req, res) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {

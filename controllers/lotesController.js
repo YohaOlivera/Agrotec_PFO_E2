@@ -3,7 +3,84 @@ const Lote = require("../models/Lote");
 const Productor = require("../models/Productor");
 const Observacion = require("../models/Observacion");
 
-// GET /api/lotes (admite query opcional ?alerta=Normal|Atención|Crítico)
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     Lote:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           $ref: '#/components/schemas/ObjectId'
+ *         nombre_numero:
+ *           type: string
+ *           example: Lote 45 Sur
+ *         id_productor:
+ *           $ref: '#/components/schemas/ObjectId'
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *         __v:
+ *           type: integer
+ *     LotePopulado:
+ *       allOf:
+ *         - $ref: '#/components/schemas/Lote'
+ *         - type: object
+ *           properties:
+ *             id_productor:
+ *               $ref: '#/components/schemas/Productor'
+ *     LoteInput:
+ *       type: object
+ *       required: [nombre_numero, id_productor]
+ *       properties:
+ *         nombre_numero:
+ *           type: string
+ *           example: Lote 45 Sur
+ *         id_productor:
+ *           $ref: '#/components/schemas/ObjectId'
+ */
+
+/**
+ * @openapi
+ * /api/lotes:
+ *   get:
+ *     tags: [Lotes]
+ *     summary: Listar lotes
+ *     description: Incluye el productor asociado. Admite filtrar por alertas activas.
+ *     operationId: listLotes
+ *     parameters:
+ *       - name: alerta
+ *         in: query
+ *         required: false
+ *         description: Nivel de alerta de una observación activa.
+ *         schema:
+ *           type: string
+ *           enum: [Normal, Atención, Crítico]
+ *     responses:
+ *       '200':
+ *         description: Lotes encontrados con su productor poblado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/LotePopulado'
+ *       '400':
+ *         description: Nivel de alerta inválido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       '500':
+ *         description: Error al obtener lotes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 exports.getAll = async (req, res) => {
   try {
     const { alerta } = req.query;
@@ -36,7 +113,45 @@ exports.getAll = async (req, res) => {
   }
 };
 
-// GET /api/lotes/:id
+/**
+ * @openapi
+ * /api/lotes/{id}:
+ *   get:
+ *     tags: [Lotes]
+ *     summary: Obtener lote por ID
+ *     operationId: getLoteById
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           $ref: '#/components/schemas/ObjectId'
+ *     responses:
+ *       '200':
+ *         description: Lote encontrado con su productor poblado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/LotePopulado'
+ *       '400':
+ *         description: ID de lote no válido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       '404':
+ *         description: Lote no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       '500':
+ *         description: Error al obtener el lote
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 exports.getById = async (req, res) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
@@ -53,7 +168,33 @@ exports.getById = async (req, res) => {
   }
 };
 
-// POST /api/lotes
+/**
+ * @openapi
+ * /api/lotes:
+ *   post:
+ *     tags: [Lotes]
+ *     summary: Crear lote
+ *     operationId: createLote
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/LoteInput'
+ *     responses:
+ *       '201':
+ *         description: Lote creado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Lote'
+ *       '400':
+ *         description: Datos requeridos ausentes o referencia de productor inválida
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 exports.create = async (req, res) => {
   try {
     const { nombre_numero, id_productor } = req.body;
@@ -80,7 +221,45 @@ exports.create = async (req, res) => {
   }
 };
 
-// PUT /api/lotes/:id
+/**
+ * @openapi
+ * /api/lotes/{id}:
+ *   put:
+ *     tags: [Lotes]
+ *     summary: Actualizar lote
+ *     operationId: updateLote
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           $ref: '#/components/schemas/ObjectId'
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/LoteInput'
+ *     responses:
+ *       '200':
+ *         description: Lote actualizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Lote'
+ *       '400':
+ *         description: ID, productor o datos no válidos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       '404':
+ *         description: Lote no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 exports.update = async (req, res) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
@@ -115,7 +294,45 @@ exports.update = async (req, res) => {
   }
 };
 
-// DELETE /api/lotes/:id
+/**
+ * @openapi
+ * /api/lotes/{id}:
+ *   delete:
+ *     tags: [Lotes]
+ *     summary: Eliminar lote
+ *     operationId: deleteLote
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           $ref: '#/components/schemas/ObjectId'
+ *     responses:
+ *       '200':
+ *         description: Lote eliminado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Message'
+ *       '400':
+ *         description: ID de lote no válido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       '404':
+ *         description: Lote no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       '500':
+ *         description: Error al eliminar el lote
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 exports.delete = async (req, res) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
@@ -133,7 +350,47 @@ exports.delete = async (req, res) => {
   }
 };
 
-// GET /api/lotes/:id/observaciones (Historial de observaciones del lote)
+/**
+ * @openapi
+ * /api/lotes/{id}/observaciones:
+ *   get:
+ *     tags: [Lotes]
+ *     summary: Consultar historial activo de observaciones del lote
+ *     operationId: getHistorialLote
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           $ref: '#/components/schemas/ObjectId'
+ *     responses:
+ *       '200':
+ *         description: Observaciones activas del lote con el técnico poblado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/ObservacionConTecnico'
+ *       '400':
+ *         description: ID de lote no válido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       '404':
+ *         description: Lote no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       '500':
+ *         description: Error al obtener el historial del lote
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 exports.getHistorial = async (req, res) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
