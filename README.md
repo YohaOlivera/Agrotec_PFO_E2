@@ -184,13 +184,15 @@ El servidor quedará disponible en:
 http://localhost:3000
 ```
 
-Para producción, crea `prod.env` desde su plantilla y reemplaza el usuario, la clave y el hostname por los datos de conexión de Atlas:
+### 5. Iniciar en producción
+
+Crea `prod.env` desde su plantilla y reemplaza el usuario, la clave y el hostname por los datos de conexión de Atlas:
 
 ```powershell
 Copy-Item prod.env.example prod.env
 ```
 
-Codifica los caracteres especiales de la contraseña para usarlos en la URI. `prod.env` tampoco se sube a Git. Luego inicia la aplicación con:
+Codifica los caracteres especiales de la contraseña para usarlos en la URI. `prod.env` es local y no debe subirse a Git. Inicia la aplicación con:
 
 ```bash
 npm run start:prod
