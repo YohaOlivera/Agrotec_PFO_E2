@@ -4,6 +4,7 @@ const controller = require("../controllers/observacionesController");
 
 router.get("/", controller.getAll);
 router.get("/:id", controller.getById);
+router.put("/:id", controller.update);
 router.post("/", controller.create);
 router.delete("/:id", controller.delete);
 

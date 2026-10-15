@@ -12,8 +12,8 @@ html(lang="es")
       ul
         each lote in lotes
           li
-            span Lote: #{lote.nombre_numero} (Productor ID: #{lote.id_productor}) 
-            a(href=`/vista/lotes/${lote.id}`) Ver Historial
+            span Lote: #{lote.nombre_numero} (Productor: #{lote.id_productor ? lote.id_productor.nombre + ' ' + lote.id_productor.apellido : 'Sin asignar'}) 
+            a(href=`/vista/lotes/${lote._id}`) Ver Historial
     else
       p No hay lotes registrados.
 

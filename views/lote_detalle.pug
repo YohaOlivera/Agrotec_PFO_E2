@@ -27,9 +27,9 @@ html(lang="es")
         tbody
           each obs in observaciones
             tr
-              td= obs.id
-              td= obs.fecha
-              td= obs.id_tecnico
+              td= obs._id.toString().substring(0, 8) + '...'
+              td= obs.fecha ? new Date(obs.fecha).toLocaleDateString('es-AR') : '-'
+              td= obs.id_tecnico ? (obs.id_tecnico.nombre + ' ' + obs.id_tecnico.apellido) : 'N/A'
               td= obs.tipo_cultivo
               td= obs.estado_cultivo
               td= obs.observaciones
