@@ -49,12 +49,14 @@ const lotesRoutes = require("./routes/lotesRoutes");
 const observacionesRoutes = require("./routes/observacionesRoutes");
 const tecnicosRoutes = require("./routes/tecnicosRoutes");
 const tiposCultivoRoutes = require("./routes/tiposCultivoRoutes");
+const authRoutes = require("./routes/authRoutes");
 
 app.use("/api/productores", productoresRoutes);
 app.use("/api/lotes", lotesRoutes);
 app.use("/api/observaciones", observacionesRoutes);
 app.use("/api/tecnicos", tecnicosRoutes);
 app.use("/api/tipos-cultivo", tiposCultivoRoutes);
+app.use("/api/auth", authRoutes);
 
 // 4. Vistas Pug adaptadas a Mongoose (async/await)
 const Lote = require("./models/Lote");
