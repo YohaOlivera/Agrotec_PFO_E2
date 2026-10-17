@@ -214,44 +214,44 @@ exports.create = async (req, res) => {
       nivel_alerta,
     } = req.body;
 
-    // 1. Validar campos requeridos obligatorios
+    // Validar campos requeridos obligatorios
     if (!id_lote || !id_tecnico || !fecha || !tipo_cultivo || !nivel_alerta) {
       return res.status(400).json({
-        error: "id_lote, id_tecnico, fecha, tipo_cultivo y nivel_alerta son obligatorios",
+        error: "Id lote, Id técnico, fecha, tipo de cultivo y nivel de alerta son obligatorios",
       });
     }
 
-    // 2. Validar formato de fecha
+    // Validar formato de fecha
     if (isNaN(Date.parse(fecha))) {
       return res.status(400).json({ error: "La fecha proporcionada no es válida" });
     }
 
-    // 3. Validar nivel de alerta permitido
+    // Validar nivel de alerta permitido
     const alertasValidas = ["Normal", "Atención", "Crítico"];
     if (!alertasValidas.includes(nivel_alerta)) {
       return res.status(400).json({
-        error: 'El nivel_alerta debe ser "Normal", "Atención" o "Crítico"',
+        error: 'El nivel de alerta debe ser "Normal", "Atención" o "Crítico"',
       });
     }
 
-    // 4. Validar formato de ObjectIds
+    // Validar formato de ObjectIds
     if (!mongoose.Types.ObjectId.isValid(id_lote) || !mongoose.Types.ObjectId.isValid(id_tecnico)) {
-      return res.status(400).json({ error: "id_lote o id_tecnico tienen un formato no válido" });
+      return res.status(400).json({ error: "Id lote o Id técnico tienen un formato no válido" });
     }
 
-    // 5. Validar existencia del lote
+    // Validar existencia del lote
     const lote = await Lote.findById(id_lote);
     if (!lote) {
-      return res.status(400).json({ error: "El id_lote proporcionado no existe" });
+      return res.status(400).json({ error: "El Id lote proporcionado no existe" });
     }
 
-    // 6. Validar existencia del técnico
+    // Validar existencia del técnico
     const tecnico = await Tecnico.findById(id_tecnico);
     if (!tecnico) {
-      return res.status(400).json({ error: "El id_tecnico proporcionado no existe" });
+      return res.status(400).json({ error: "El Id técnico proporcionado no existe" });
     }
 
-    // 7. Validar existencia del tipo de cultivo en la base de datos
+    // Validar existencia del tipo de cultivo en la base de datos
     const existeCultivo = await TipoCultivo.findOne({
       nombre: { $regex: new RegExp(`^${tipo_cultivo.trim()}$`, "i") },
     });
@@ -304,25 +304,25 @@ exports.update = async (req, res) => {
       const alertasValidas = ["Normal", "Atención", "Crítico"];
       if (!alertasValidas.includes(nivel_alerta)) {
         return res.status(400).json({
-          error: 'El nivel_alerta debe ser "Normal", "Atención" o "Crítico"',
+          error: 'El nivel de alerta debe ser "Normal", "Atención" o "Crítico"',
         });
       }
     }
 
     if (id_lote) {
       if (!mongoose.Types.ObjectId.isValid(id_lote)) {
-        return res.status(400).json({ error: "id_lote no válido" });
+        return res.status(400).json({ error: "El Id lote no es válido" });
       }
       const lote = await Lote.findById(id_lote);
-      if (!lote) return res.status(400).json({ error: "El id_lote no existe" });
+      if (!lote) return res.status(400).json({ error: "El Id lote no existe" });
     }
 
     if (id_tecnico) {
       if (!mongoose.Types.ObjectId.isValid(id_tecnico)) {
-        return res.status(400).json({ error: "id_tecnico no válido" });
+        return res.status(400).json({ error: "El Id técnico no es válido" });
       }
       const tecnico = await Tecnico.findById(id_tecnico);
-      if (!tecnico) return res.status(400).json({ error: "El id_tecnico no existe" });
+      if (!tecnico) return res.status(400).json({ error: "El Id técnico no existe" });
     }
 
     if (tipo_cultivo) {
@@ -417,7 +417,7 @@ exports.delete = async (req, res) => {
     }
 
     res.status(200).json({
-      mensaje: "Observación dada de baja correctamente (conservada en historial)",
+      mensaje: "Observación dada de baja correctamente",
     });
   } catch (error) {
     res.status(500).json({ error: "Error al eliminar la observación" });

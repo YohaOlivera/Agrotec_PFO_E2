@@ -201,7 +201,7 @@ exports.create = async (req, res) => {
 
     if (!nombre_numero || !id_productor) {
       return res.status(400).json({
-        error: "El nombre_numero y el id_productor son obligatorios",
+        error: "El nombre del lote y el Id productor son obligatorios",
       });
     }
 
@@ -211,7 +211,7 @@ exports.create = async (req, res) => {
 
     const productor = await Productor.findById(id_productor);
     if (!productor) {
-      return res.status(400).json({ error: "El id_productor no existe" });
+      return res.status(400).json({ error: "El Id productor no existe" });
     }
 
     const nuevoLote = await Lote.create({ nombre_numero, id_productor });
@@ -274,7 +274,7 @@ exports.update = async (req, res) => {
       }
       const productor = await Productor.findById(id_productor);
       if (!productor) {
-        return res.status(400).json({ error: "El id_productor no existe" });
+        return res.status(400).json({ error: "El Id productor no existe" });
       }
     }
 

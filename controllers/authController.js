@@ -60,18 +60,18 @@ exports.register = async (req, res) => {
     // Validación básica de campos requeridos
     if (!username || !password || !nombre || !apellido || !email) {
       return res.status(400).json({
-        error: "Todos los campos son obligatorios: username, password, nombre, apellido, email",
+        error: "Todos los campos son obligatorios: usuario, contraseña, nombre, apellido, email",
       });
     }
 
-    // Verificar duplicados de username o email
+    // Verificar duplicados de usuario o email
     const existeUsuario = await User.findOne({
       $or: [{ username }, { email }],
     });
 
     if (existeUsuario) {
       const campo =
-        existeUsuario.username === username ? "username" : "email";
+        existeUsuario.username === username ? "usuario" : "email";
       return res.status(400).json({
         error: `El ${campo} ya está registrado`,
       });

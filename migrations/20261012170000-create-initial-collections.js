@@ -26,5 +26,4 @@ module.exports.up = async (db) => {
 };
 
 module.exports.down = async () => {
-  // This baseline migration never drops collections or application data.
 };

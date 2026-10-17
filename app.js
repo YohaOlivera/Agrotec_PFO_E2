@@ -15,7 +15,7 @@ const connectDB = require("./config/db");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// 0. Documentación OpenAPI
+// Documentación OpenAPI
 const swaggerSpec = swaggerJSDoc({
   definition: {
     openapi: "3.0.3",
@@ -35,15 +35,15 @@ app.get("/api-docs.json", (req, res) => {
 });
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-// 1. Configuración del motor de plantillas Pug
+// Configuración del motor de plantillas Pug
 app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "views"));
 
-// 2. Middlewares para parsear JSON y formularios
+// Middlewares para parsear JSON y formularios
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// 3. Rutas de la API REST
+// Rutas de la API REST
 const productoresRoutes = require("./routes/productoresRoutes");
 const lotesRoutes = require("./routes/lotesRoutes");
 const observacionesRoutes = require("./routes/observacionesRoutes");
@@ -58,7 +58,7 @@ app.use("/api/tecnicos", tecnicosRoutes);
 app.use("/api/tipos-cultivo", tiposCultivoRoutes);
 app.use("/api/auth", authRoutes);
 
-// 4. Vistas Pug adaptadas a Mongoose (async/await)
+// Vistas Pug adaptadas a Mongoose (async/await)
 const Lote = require("./models/Lote");
 const Observacion = require("./models/Observacion");
 
@@ -100,18 +100,18 @@ app.get("/vista/lotes/:id", async (req, res) => {
   }
 });
 
-// 5. Manejo de error 404 (Ruta no encontrada)
+// Manejo de error 404 (Ruta no encontrada)
 app.use((req, res) => {
   res.status(404).json({ error: "Ruta no encontrada" });
 });
 
-// 6. Manejo global de errores (500)
+// Manejo global de errores (500)
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: "Error interno del servidor" });
 });
 
-// 7. Iniciar solo después de confirmar la conexión a la base.
+// Iniciar solo después de confirmar la conexión a la base.
 const startServer = async () => {
   try {
     await connectDB();

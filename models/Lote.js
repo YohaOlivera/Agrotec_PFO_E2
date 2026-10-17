@@ -10,7 +10,7 @@ const loteSchema = new mongoose.Schema(
     id_productor: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Productor",
-      required: [true, "El id_productor es obligatorio"],
+      required: [true, "El id productor es obligatorio"],
     },
   },
   {

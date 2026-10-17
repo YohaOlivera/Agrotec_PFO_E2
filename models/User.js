@@ -31,7 +31,7 @@ const userSchema = new mongoose.Schema(
             required: [true, "El correo electrónico es obligatorio"],
             unique: true,
             trim: true,
-            lowercase: true, // normaliza a minúsculas
+            lowercase: true,
             match: [/^\S+@\S+\.\S+$/, "Por favor ingresa un correo válido"],
         },
     },
