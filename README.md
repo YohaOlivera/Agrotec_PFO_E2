@@ -2,7 +2,6 @@
   <img src="./assets/YodaLabs.png" alt="YodaLabs Logo" width="220">
 </p>
 
-
 <p align="center">
   <strong>Sistema de Monitoreo de Lotes Agrícolas</strong><br>
   Backend REST desarrollado con Node.js + Express + persistencia en MongoDB
@@ -10,31 +9,31 @@
 
 ## Enlaces del proyecto
 
-| Recurso | Enlace |
-|---|---|
-| Carpeta de Drive | [Ver carpeta](https://drive.google.com/drive/folders/1T1AhoS5pFML2QUu2URkSjbAvRI-ApKK1?hl=es) |
-| Repositorio GitHub | [Ver repositorio](https://github.com/YohaOlivera/Agrotec_PFO_E2) |
-| Video de presentación | [Ver video](modificar) |
+| Recurso               | Enlace                                                                                        |
+| --------------------- | --------------------------------------------------------------------------------------------- |
+| Carpeta de Drive      | [Ver carpeta](https://drive.google.com/drive/folders/1T1AhoS5pFML2QUu2URkSjbAvRI-ApKK1?hl=es) |
+| Repositorio GitHub    | [Ver repositorio](https://github.com/YohaOlivera/Agrotec_PFO_E2)                              |
+| Video de presentación | [Ver video](modificar)                                                                        |
 
 ---
 
 ## Índice
 
-1. [Descripción general](#-descripción-general)
-2. [Problemática que resuelve](#-problemática-que-resuelve)
-3. [Tecnologías utilizadas](#-tecnologías-utilizadas)
-4. [Arquitectura y organización del proyecto](#-arquitectura-y-organización-del-proyecto)
-5. [Estructura de carpetas](#-estructura-de-carpetas)
-6. [Instalación y ejecución](#-instalación-y-ejecución)
-7. [Modelo de datos](#-modelo-de-datos)
-8. [Endpoints de la API](#-endpoints-de-la-api)
-9. [Vistas con Pug (Server-Side Rendering)](#-vistas-con-pug-server-side-rendering)
-10. [Consultas destacadas](#-consultas-destacadas)
-11. [Reglas de negocio y validaciones](#-reglas-de-negocio-y-validaciones)
-12. [Manejo de errores y códigos HTTP](#-manejo-de-errores-y-códigos-http)
-13. [Pruebas de endpoints](#-pruebas-de-endpoints)
-14. [Integrantes y responsabilidades](#-integrantes-y-responsabilidades)
-15. [Próximas mejoras](#-próximas-mejoras)
+1. [Descripción general](#descripción-general)
+2. [Problemática que resuelve](#problemática-que-resuelve)
+3. [Tecnologías utilizadas](#tecnologías-utilizadas)
+4. [Arquitectura y organización del proyecto](#arquitectura-y-organización-del-proyecto)
+5. [Estructura de carpetas](#estructura-de-carpetas)
+6. [Instalación y ejecución](#instalación-y-ejecución)
+7. [Modelo de datos](#modelo-de-datos)
+8. [Endpoints de la API](#endpoints-de-la-api)
+9. [Vistas con Pug (Server-Side Rendering)](#vistas-con-pug-server-side-rendering)
+10. [Consultas destacadas](#consultas-destacadas)
+11. [Reglas de negocio y validaciones](#reglas-de-negocio-y-validaciones)
+12. [Manejo de errores y códigos HTTP](#manejo-de-errores-y-códigos-http)
+13. [Pruebas de endpoints](#pruebas-de-endpoints)
+14. [Integrantes y responsabilidades](#integrantes-y-responsabilidades)
+15. [Próximas mejoras](#próximas-mejoras)
 
 ---
 
@@ -60,27 +59,27 @@ Los técnicos de AgroTec registraban información en **papel** y luego la volcab
 - Detectar lotes con alertas agronómicas
 - Mantener trazabilidad de las observaciones
 
-Esta solución **centraliza los datos**, garantiza la **integridad referencial** y conserva el **historial histórico** mediante borrado lógico (*soft delete*).
+Esta solución **centraliza los datos**, garantiza la **integridad referencial** y conserva el **historial histórico** mediante borrado lógico (_soft delete_).
 
 ---
 
 ## Tecnologías utilizadas
 
-| Tecnología | Rol en el proyecto |
-|---|---|
-| **Node.js** | Entorno de ejecución del servidor |
-| **Express.js** | Framework para la API REST, ruteo modular y middlewares |
-| **Pug** | Motor de plantillas server-side para vistas básicas |
-| **MongoDB** | Base de datos documental |
-| **Mongoose** | Modelos, validación y acceso a MongoDB |
-| **dotenv** | Gestión de variables de entorno |
-| **swagger-jsdoc + swagger-ui-express** | Documentación interactiva de la API (OpenAPI 3.0) |
-| **migrate-mongo** | Gestión de migraciones de esquema en MongoDB |
-| **path** (nativo de Node) | Manejo de rutas de sistema de archivos |
-| **JavaScript ES6+ (CommonJS)** | Módulos, desestructuración, async/await |
-| **npm** | Gestión de dependencias y scripts |
-| **Postman / Thunder Client** | Testing manual de endpoints |
-| **Git / GitHub** | Control de versiones y colaboración |
+| Tecnología                             | Rol en el proyecto                                      |
+| -------------------------------------- | ------------------------------------------------------- |
+| **Node.js**                            | Entorno de ejecución del servidor                       |
+| **Express.js**                         | Framework para la API REST, ruteo modular y middlewares |
+| **Pug**                                | Motor de plantillas server-side para vistas básicas     |
+| **MongoDB**                            | Base de datos documental                                |
+| **Mongoose**                           | Modelos, validación y acceso a MongoDB                  |
+| **dotenv**                             | Gestión de variables de entorno                         |
+| **swagger-jsdoc + swagger-ui-express** | Documentación interactiva de la API (OpenAPI 3.0)       |
+| **migrate-mongo**                      | Gestión de migraciones de esquema en MongoDB            |
+| **path** (nativo de Node)              | Manejo de rutas de sistema de archivos                  |
+| **JavaScript ES6+ (CommonJS)**         | Módulos, desestructuración, async/await                 |
+| **npm**                                | Gestión de dependencias y scripts                       |
+| **Postman / Thunder Client**           | Testing manual de endpoints                             |
+| **Git / GitHub**                       | Control de versiones y colaboración                     |
 
 ---
 
@@ -93,19 +92,19 @@ El proyecto sigue un patrón **MVC (Modelo – Vista – Controlador)**:
 - **Rutas** → mapean los endpoints HTTP a sus controladores correspondientes.
 - **Vistas Pug** → renderizado server-side para consulta visual en el navegador.
 
-| Elemento | Función |
-|---|---|
-| `app.js` | Configura Express, Pug, middlewares, rutas, Swagger, manejo de errores e inicio del servidor |
-| `config/` | Conexión a MongoDB (`db.js`) y configuración DNS (`mongo-dns.js`) |
-| `routes/` | Define endpoints y métodos HTTP por recurso |
-| `controllers/` | Procesa peticiones, valida datos y devuelve respuestas HTTP |
-| `models/` | Esquemas Mongoose con validaciones integradas |
-| `migrations/` | Migraciones de esquema administradas con `migrate-mongo` |
-| `scripts/` | Script de seed para poblar la base con datos iniciales |
-| `data/` | Archivos JSON con datos de origen para el seed |
-| `views/` | Plantillas Pug para las vistas del navegador |
-| `assets/` | Imágenes y documentos del proyecto |
-| `package.json` | Metadatos, scripts y dependencias |
+| Elemento       | Función                                                                                      |
+| -------------- | -------------------------------------------------------------------------------------------- |
+| `app.js`       | Configura Express, Pug, middlewares, rutas, Swagger, manejo de errores e inicio del servidor |
+| `config/`      | Conexión a MongoDB (`db.js`) y configuración DNS (`mongo-dns.js`)                            |
+| `routes/`      | Define endpoints y métodos HTTP por recurso                                                  |
+| `controllers/` | Procesa peticiones, valida datos y devuelve respuestas HTTP                                  |
+| `models/`      | Esquemas Mongoose con validaciones integradas                                                |
+| `migrations/`  | Migraciones de esquema administradas con `migrate-mongo`                                     |
+| `scripts/`     | Script de seed para poblar la base con datos iniciales                                       |
+| `data/`        | Archivos JSON con datos de origen para el seed                                               |
+| `views/`       | Plantillas Pug para las vistas del navegador                                                 |
+| `assets/`      | Imágenes y documentos del proyecto                                                           |
+| `package.json` | Metadatos, scripts y dependencias                                                            |
 
 ---
 
@@ -366,73 +365,74 @@ La aplicación persiste los datos en MongoDB mediante modelos Mongoose. Los arch
 
 ### Autenticación — `/api/auth`
 
-| Método | Endpoint | Body | Descripción |
-|---|---|---|---|
-| POST | `/api/auth/register` | `{ username, password, nombre, apellido, email }` | Registra un nuevo usuario |
-| POST | `/api/auth/login` | `{ username, password }` | Inicia sesión y devuelve los datos del usuario |
+| Método | Endpoint             | Body                                              | Descripción                                    |
+| ------ | -------------------- | ------------------------------------------------- | ---------------------------------------------- |
+| POST   | `/api/auth/register` | `{ username, password, nombre, apellido, email }` | Registra un nuevo usuario                      |
+| POST   | `/api/auth/login`    | `{ username, password }`                          | Inicia sesión y devuelve los datos del usuario |
 
 ### Productores — `/api/productores`
 
-| Método | Endpoint | Body | Descripción |
-|---|---|---|---|
-| GET | `/api/productores` | — | Lista todos los productores |
-| GET | `/api/productores/:id` | — | Obtiene un productor por ID |
-| POST | `/api/productores` | `{ nombre, apellido, telefono, email, establecimiento }` | Registra un nuevo productor |
-| PUT | `/api/productores/:id` | `{ nombre, apellido, telefono, email, establecimiento }` | Actualiza un productor |
-| DELETE | `/api/productores/:id` | — | Elimina un productor |
+| Método | Endpoint               | Body                                                     | Descripción                 |
+| ------ | ---------------------- | -------------------------------------------------------- | --------------------------- |
+| GET    | `/api/productores`     | —                                                        | Lista todos los productores |
+| GET    | `/api/productores/:id` | —                                                        | Obtiene un productor por ID |
+| POST   | `/api/productores`     | `{ nombre, apellido, telefono, email, establecimiento }` | Registra un nuevo productor |
+| PUT    | `/api/productores/:id` | `{ nombre, apellido, telefono, email, establecimiento }` | Actualiza un productor      |
+| DELETE | `/api/productores/:id` | —                                                        | Elimina un productor        |
 
 ### Lotes — `/api/lotes`
 
-| Método | Endpoint | Body / Query | Descripción |
-|---|---|---|---|
-| GET | `/api/lotes` | `?alerta=Normal\|Atención\|Crítico` | Lista lotes (admite filtro por nivel de alerta activa) |
-| GET | `/api/lotes/:id` | — | Obtiene un lote por ID |
-| GET | `/api/lotes/:id/observaciones` | — | Historial de observaciones activas del lote |
-| POST | `/api/lotes` | `{ nombre_numero, id_productor }` | Crea un lote (valida que el productor exista) |
-| PUT | `/api/lotes/:id` | `{ nombre_numero, id_productor }` | Actualiza un lote |
-| DELETE | `/api/lotes/:id` | — | Elimina un lote |
+| Método | Endpoint                       | Body / Query                        | Descripción                                            |
+| ------ | ------------------------------ | ----------------------------------- | ------------------------------------------------------ |
+| GET    | `/api/lotes`                   | `?alerta=Normal\|Atención\|Crítico` | Lista lotes (admite filtro por nivel de alerta activa) |
+| GET    | `/api/lotes/:id`               | —                                   | Obtiene un lote por ID                                 |
+| GET    | `/api/lotes/:id/observaciones` | —                                   | Historial de observaciones activas del lote            |
+| POST   | `/api/lotes`                   | `{ nombre_numero, id_productor }`   | Crea un lote (valida que el productor exista)          |
+| PUT    | `/api/lotes/:id`               | `{ nombre_numero, id_productor }`   | Actualiza un lote                                      |
+| DELETE | `/api/lotes/:id`               | —                                   | Elimina un lote                                        |
 
 ### Observaciones — `/api/observaciones`
 
-| Método | Endpoint | Body | Descripción |
-|---|---|---|---|
-| GET | `/api/observaciones` | — | Lista observaciones activas |
-| GET | `/api/observaciones/:id` | — | Obtiene una observación activa por ID |
-| POST | `/api/observaciones` | `{ id_lote, id_tecnico, fecha, tipo_cultivo, estado_cultivo, observaciones, nivel_alerta }` | Registra una observación |
-| PUT | `/api/observaciones/:id` | `{ id_lote, id_tecnico, fecha, tipo_cultivo, estado_cultivo, observaciones, nivel_alerta }` | Actualiza una observación activa |
-| DELETE | `/api/observaciones/:id` | — | Borrado lógico (*soft delete*): marca `activa: false` |
+| Método | Endpoint                 | Body                                                                                        | Descripción                                           |
+| ------ | ------------------------ | ------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| GET    | `/api/observaciones`     | —                                                                                           | Lista observaciones activas                           |
+| GET    | `/api/observaciones/:id` | —                                                                                           | Obtiene una observación activa por ID                 |
+| POST   | `/api/observaciones`     | `{ id_lote, id_tecnico, fecha, tipo_cultivo, estado_cultivo, observaciones, nivel_alerta }` | Registra una observación                              |
+| PUT    | `/api/observaciones/:id` | `{ id_lote, id_tecnico, fecha, tipo_cultivo, estado_cultivo, observaciones, nivel_alerta }` | Actualiza una observación activa                      |
+| DELETE | `/api/observaciones/:id` | —                                                                                           | Borrado lógico (_soft delete_): marca `activa: false` |
 
 ### Técnicos — `/api/tecnicos`
 
-| Método | Endpoint | Body | Descripción |
-|---|---|---|---|
-| GET | `/api/tecnicos` | — | Lista todos los técnicos |
-| GET | `/api/tecnicos/:id` | — | Obtiene un técnico por ID |
-| POST | `/api/tecnicos` | `{ nombre, apellido, telefono, email, especialidad }` | Registra un técnico |
-| PUT | `/api/tecnicos/:id` | `{ nombre, apellido, telefono, email, especialidad }` | Actualiza un técnico |
-| DELETE | `/api/tecnicos/:id` | — | Elimina un técnico |
+| Método | Endpoint            | Body                                                  | Descripción               |
+| ------ | ------------------- | ----------------------------------------------------- | ------------------------- |
+| GET    | `/api/tecnicos`     | —                                                     | Lista todos los técnicos  |
+| GET    | `/api/tecnicos/:id` | —                                                     | Obtiene un técnico por ID |
+| POST   | `/api/tecnicos`     | `{ nombre, apellido, telefono, email, especialidad }` | Registra un técnico       |
+| PUT    | `/api/tecnicos/:id` | `{ nombre, apellido, telefono, email, especialidad }` | Actualiza un técnico      |
+| DELETE | `/api/tecnicos/:id` | —                                                     | Elimina un técnico        |
 
 ### Tipos de cultivo — `/api/tipos-cultivo`
 
-| Método | Endpoint | Body | Descripción |
-|---|---|---|---|
-| GET | `/api/tipos-cultivo` | — | Obtiene el catálogo completo |
-| GET | `/api/tipos-cultivo/:id` | — | Obtiene un tipo por ID |
-| POST | `/api/tipos-cultivo` | `{ nombre }` | Agrega un tipo de cultivo |
-| PUT | `/api/tipos-cultivo/:id` | `{ nombre }` | Modifica un tipo de cultivo |
-| DELETE | `/api/tipos-cultivo/:id` | — | Elimina un tipo de cultivo |
+| Método | Endpoint                 | Body         | Descripción                  |
+| ------ | ------------------------ | ------------ | ---------------------------- |
+| GET    | `/api/tipos-cultivo`     | —            | Obtiene el catálogo completo |
+| GET    | `/api/tipos-cultivo/:id` | —            | Obtiene un tipo por ID       |
+| POST   | `/api/tipos-cultivo`     | `{ nombre }` | Agrega un tipo de cultivo    |
+| PUT    | `/api/tipos-cultivo/:id` | `{ nombre }` | Modifica un tipo de cultivo  |
+| DELETE | `/api/tipos-cultivo/:id` | —            | Elimina un tipo de cultivo   |
 
 ---
 
 ## Vistas con Pug (Server-Side Rendering)
 
-| Ruta | Vista | Descripción |
-|---|---|---|
-| `GET /` | `index.pug` | Página de bienvenida a AgroTec |
-| `GET /vista/lotes` | `lotes.pug` | Tabla con listado general de lotes y su productor asociado |
-| `GET /vista/lotes/:id` | `lote_detalle.pug` | Ficha del lote + historial de observaciones activas |
+| Ruta                   | Vista              | Descripción                                                |
+| ---------------------- | ------------------ | ---------------------------------------------------------- |
+| `GET /`                | `index.pug`        | Página de bienvenida a AgroTec                             |
+| `GET /vista/lotes`     | `lotes.pug`        | Tabla con listado general de lotes y su productor asociado |
+| `GET /vista/lotes/:id` | `lote_detalle.pug` | Ficha del lote + historial de observaciones activas        |
 
 La vista `lote_detalle.pug` aplica estilos CSS según el nivel de alerta:
+
 - 🟢 `Normal`
 - 🟠 `Atención`
 - 🔴 `Crítico`
@@ -492,20 +492,20 @@ Devuelve únicamente las observaciones cuyo campo `activa` sea `true`, respetand
 - **Fecha**: se valida con `Date.parse(fecha)`.
 - **Nivel de alerta**: solo se admiten `"Normal"`, `"Atención"` o `"Crítico"`.
 - **Formato de ID**: todos los parámetros `:id` se validan con `mongoose.Types.ObjectId.isValid()` antes de consultar la base.
-- **Inmutabilidad de auditoría**: las observaciones **no se eliminan físicamente**; se aplica *soft delete* asignando `activa: false`.
+- **Inmutabilidad de auditoría**: las observaciones **no se eliminan físicamente**; se aplica _soft delete_ asignando `activa: false`.
 
 ---
 
 ## Manejo de errores y códigos HTTP
 
-| Código | Situación |
-|---|---|
-| **200 OK** | Consultas y actualizaciones exitosas |
-| **201 Created** | Creación exitosa de un recurso |
-| **400 Bad Request** | Falta de campos obligatorios, tipos incorrectos, alertas inválidas o violación de integridad referencial |
-| **401 Unauthorized** | Credenciales incorrectas en el login |
-| **404 Not Found** | Recurso inexistente por `:id` o ruta no encontrada (middleware global) |
-| **500 Internal Server Error** | Excepciones no controladas o fallos de lectura/escritura (middleware global) |
+| Código                        | Situación                                                                                                |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------- |
+| **200 OK**                    | Consultas y actualizaciones exitosas                                                                     |
+| **201 Created**               | Creación exitosa de un recurso                                                                           |
+| **400 Bad Request**           | Falta de campos obligatorios, tipos incorrectos, alertas inválidas o violación de integridad referencial |
+| **401 Unauthorized**          | Credenciales incorrectas en el login                                                                     |
+| **404 Not Found**             | Recurso inexistente por `:id` o ruta no encontrada (middleware global)                                   |
+| **500 Internal Server Error** | Excepciones no controladas o fallos de lectura/escritura (middleware global)                             |
 
 Todas las respuestas de error se devuelven en formato JSON:
 
@@ -529,6 +529,7 @@ Las pruebas se realizaron con **Postman** y **Thunder Client**.
 
 - **Endpoint:** `POST /api/auth/register`
 - **Body:**
+
 ```json
 {
   "username": "admin",
@@ -538,7 +539,9 @@ Las pruebas se realizaron con **Postman** y **Thunder Client**.
   "email": "admin@agrotec.com"
 }
 ```
+
 - **Respuesta:** `201 Created`
+
 ```json
 {
   "mensaje": "Usuario registrado con éxito",
@@ -556,10 +559,13 @@ Las pruebas se realizaron con **Postman** y **Thunder Client**.
 
 - **Endpoint:** `POST /api/auth/login`
 - **Body:**
+
 ```json
 { "username": "admin", "password": "123456" }
 ```
+
 - **Respuesta:** `200 OK`
+
 ```json
 {
   "mensaje": "Inicio de sesión exitoso",
@@ -576,6 +582,7 @@ Las pruebas se realizaron con **Postman** y **Thunder Client**.
 #### Iniciar sesión con credenciales incorrectas
 
 - **Respuesta:** `401 Unauthorized`
+
 ```json
 { "error": "Usuario o contraseña incorrectos" }
 ```
@@ -588,6 +595,7 @@ Las pruebas se realizaron con **Postman** y **Thunder Client**.
 
 - **Endpoint:** `POST /api/productores`
 - **Body:**
+
 ```json
 {
   "nombre": "Juan",
@@ -597,12 +605,14 @@ Las pruebas se realizaron con **Postman** y **Thunder Client**.
   "establecimiento": "Estancia El Ombú"
 }
 ```
+
 - **Respuesta:** `201 Created`
 
 #### Crear productor sin campos obligatorios
 
 - **Body:** `{ "telefono": "1122334455" }`
 - **Respuesta:** `400 Bad Request`
+
 ```json
 { "error": "El nombre y el apellido son obligatorios" }
 ```
@@ -615,24 +625,29 @@ Las pruebas se realizaron con **Postman** y **Thunder Client**.
 
 - **Endpoint:** `POST /api/lotes`
 - **Body:**
+
 ```json
 {
   "nombre_numero": "Lote 45 Sur",
   "id_productor": "68123abc4567def890123401"
 }
 ```
+
 - **Respuesta:** `201 Created`
 
 #### Crear lote con productor inexistente
 
 - **Body:**
+
 ```json
 {
   "nombre_numero": "Lote 99 Este",
   "id_productor": "68123abc4567def890000000"
 }
 ```
+
 - **Respuesta:** `400 Bad Request`
+
 ```json
 { "error": "El Id productor no existe" }
 ```
@@ -640,6 +655,7 @@ Las pruebas se realizaron con **Postman** y **Thunder Client**.
 #### Crear lote con ID de productor con formato inválido
 
 - **Respuesta:** `400 Bad Request`
+
 ```json
 { "error": "ID de productor no válido" }
 ```
@@ -653,8 +669,11 @@ Las pruebas se realizaron con **Postman** y **Thunder Client**.
 
 - **Endpoint:** `GET /api/lotes?alerta=Grave`
 - **Respuesta:** `400 Bad Request`
+
 ```json
-{ "error": "Nivel de alerta inválido. Debe ser \"Normal\", \"Atención\" o \"Crítico\"" }
+{
+  "error": "Nivel de alerta inválido. Debe ser \"Normal\", \"Atención\" o \"Crítico\""
+}
 ```
 
 ---
@@ -665,6 +684,7 @@ Las pruebas se realizaron con **Postman** y **Thunder Client**.
 
 - **Endpoint:** `POST /api/observaciones`
 - **Body:**
+
 ```json
 {
   "id_lote": "68123abc4567def890123402",
@@ -676,25 +696,33 @@ Las pruebas se realizaron con **Postman** y **Thunder Client**.
   "nivel_alerta": "Normal"
 }
 ```
+
 - **Respuesta:** `201 Created`
 
 #### Registrar observación con nivel de alerta inválido
 
 - **Respuesta:** `400 Bad Request`
+
 ```json
-{ "error": "El nivel de alerta debe ser \"Normal\", \"Atención\" o \"Crítico\"" }
+{
+  "error": "El nivel de alerta debe ser \"Normal\", \"Atención\" o \"Crítico\""
+}
 ```
 
 #### Registrar observación sin fecha
 
 - **Respuesta:** `400 Bad Request`
+
 ```json
-{ "error": "Id lote, Id técnico, fecha, tipo de cultivo y nivel de alerta son obligatorios" }
+{
+  "error": "Id lote, Id técnico, fecha, tipo de cultivo y nivel de alerta son obligatorios"
+}
 ```
 
 #### Registrar observación con tipo de cultivo inexistente en el catálogo
 
 - **Respuesta:** `400 Bad Request`
+
 ```json
 { "error": "El tipo de cultivo 'Algodón' no existe en el catálogo de cultivos" }
 ```
@@ -703,6 +731,7 @@ Las pruebas se realizaron con **Postman** y **Thunder Client**.
 
 - **Endpoint:** `DELETE /api/observaciones/68123abc4567def890123404`
 - **Respuesta:** `200 OK`
+
 ```json
 { "mensaje": "Observación dada de baja correctamente" }
 ```
@@ -713,13 +742,13 @@ Las pruebas se realizaron con **Postman** y **Thunder Client**.
 
 ## Integrantes y responsabilidades
 
-| Integrante | Responsabilidades |
-|---|---|
-| **Yohana Olivera** | Modelado de dominio: esquemas Mongoose de `Productor` y `Tecnico`. Validaciones a nivel de modelo. |
-| **Itziar Urriola** | Configuración del servidor y entorno: Express, middlewares, ruteo central en `app.js`, gestión de dependencias en `package.json`. |
-| **Melisa Salano** | Módulo de Tipos de Cultivo (`TipoCultivo.js` + `tiposCultivoController.js`). Módulo de Autenticación (`User.js` + `authController.js`). |
-| **Maximiliano Millar** | Controlador de Observaciones y lógica de negocio. Implementación del *soft delete* para preservar el historial. |
-| **Leonel Diaz** | Controlador de Lotes (CRUD + filtro por alerta + historial). Vistas Pug (`index.pug`, `lotes.pug`, `lote_detalle.pug`). |
+| Integrante             | Responsabilidades                                                                                                                       |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| **Yohana Olivera**     | Modelado de dominio: esquemas Mongoose de `Productor` y `Tecnico`. Validaciones a nivel de modelo.                                      |
+| **Itziar Urriola**     | Configuración del servidor y entorno: Express, middlewares, ruteo central en `app.js`, gestión de dependencias en `package.json`.       |
+| **Melisa Salano**      | Módulo de Tipos de Cultivo (`TipoCultivo.js` + `tiposCultivoController.js`). Módulo de Autenticación (`User.js` + `authController.js`). |
+| **Maximiliano Millar** | Controlador de Observaciones y lógica de negocio. Implementación del _soft delete_ para preservar el historial.                         |
+| **Leonel Diaz**        | Controlador de Lotes (CRUD + filtro por alerta + historial). Vistas Pug (`index.pug`, `lotes.pug`, `lote_detalle.pug`).                 |
 
 ---
 
