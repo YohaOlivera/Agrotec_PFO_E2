@@ -12,8 +12,8 @@
 
 | Recurso | Enlace |
 |---|---|
-| Carpeta de Drive | [Ver carpeta](modificar) |
-| Repositorio GitHub | [Ver repositorio](modificar) |
+| Carpeta de Drive | [Ver carpeta](https://drive.google.com/drive/folders/1T1AhoS5pFML2QUu2URkSjbAvRI-ApKK1?hl=es) |
+| Repositorio GitHub | [Ver repositorio](https://github.com/YohaOlivera/Agrotec_PFO_E2) |
 | Video de presentación | [Ver video](modificar) |
 
 ---
