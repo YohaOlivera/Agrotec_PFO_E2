@@ -1,0 +1,35 @@
+doctype html
+html(lang="es")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title= title
+  body
+    h1= title
+    form(action="/", method="get")
+      button(type="submit") Inicio
+    form(action="/vista/tecnicos", method="get")
+      button(type="submit") Técnicos
+    form(action="/vista/tipos-cultivo", method="get")
+      button(type="submit") Cultivos
+    form(action="/vista/usuarios", method="get")
+      button(type="submit") Usuarios
+    form(action="/vista/lotes", method="get")
+      button(type="submit") Lotes
+    if productores.length > 0
+      table
+        thead
+          tr
+            th Productor
+            th Establecimiento
+            th Teléfono
+            th Email
+        tbody
+          each productor in productores
+            tr
+              td #{productor.nombre} #{productor.apellido}
+              td= productor.establecimiento || 'Sin asignar'
+              td= productor.telefono || 'Sin teléfono'
+              td= productor.email || 'Sin email'
+    else
+      p No hay productores registrados.

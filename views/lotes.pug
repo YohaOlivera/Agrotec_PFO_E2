@@ -6,14 +6,30 @@ html(lang="es")
     title= title
   body
     h1= title
-    a(href="/") Volver al Inicio
-    hr
+    form(action="/", method="get")
+      button(type="submit") Inicio
+    form(action="/vista/productores", method="get")
+      button(type="submit") Productores
+    form(action="/vista/tecnicos", method="get")
+      button(type="submit") Técnicos
+    form(action="/vista/tipos-cultivo", method="get")
+      button(type="submit") Cultivos
+    form(action="/vista/usuarios", method="get")
+      button(type="submit") Usuarios
     if lotes.length > 0
-      ul
-        each lote in lotes
-          li
-            span Lote: #{lote.nombre_numero} (Productor: #{lote.id_productor ? lote.id_productor.nombre + ' ' + lote.id_productor.apellido : 'Sin asignar'}) 
-            a(href=`/vista/lotes/${lote._id}`) Ver Historial
+      table
+        thead
+          tr
+            th Lote
+            th Productor
+            th Acciones
+        tbody
+          each lote in lotes
+            tr
+              td= lote.nombre_numero
+              td= lote.id_productor ? lote.id_productor.nombre + ' ' + lote.id_productor.apellido : 'Sin asignar'
+              td
+                form(action=`/vista/lotes/${lote._id}`, method="get")
+                  button(type="submit") Ver historial
     else
       p No hay lotes registrados.
-

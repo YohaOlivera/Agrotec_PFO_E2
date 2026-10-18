@@ -1,0 +1,31 @@
+doctype html
+html(lang="es")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title= title
+  body
+    h1= title
+    form(action="/", method="get")
+      button(type="submit") Inicio
+    form(action="/vista/productores", method="get")
+      button(type="submit") Productores
+    form(action="/vista/tecnicos", method="get")
+      button(type="submit") Técnicos
+    form(action="/vista/usuarios", method="get")
+      button(type="submit") Usuarios
+    form(action="/vista/lotes", method="get")
+      button(type="submit") Lotes
+    if tiposCultivo.length > 0
+      table
+        thead
+          tr
+            th #
+            th Tipo de cultivo
+        tbody
+          each tipo, index in tiposCultivo
+            tr
+              td= index + 1
+              td= tipo.nombre
+    else
+      p No hay tipos de cultivo registrados.

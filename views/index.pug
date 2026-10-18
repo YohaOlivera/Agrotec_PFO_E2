@@ -7,15 +7,23 @@ html(lang="es")
   body
     h1= message
     p Estado del sistema: Operativo.
+    h2 Vistas disponibles
     ul
       li
         a(href="/vista/lotes") Ver Lotes
       li
-        span API REST disponible en:
-        ul
-          li /api/productores
-          li /api/lotes
-          li /api/observaciones
-          li /api/tecnicos
-          li /api/tipos-cultivo
-
+        a(href="/vista/productores") Ver Productores
+      li
+        a(href="/vista/tecnicos") Ver Técnicos
+      li
+        a(href="/vista/tipos-cultivo") Ver Tipos de Cultivo
+      li
+        a(href="/vista/usuarios") Ver Usuarios
+    h2 API REST
+    p API REST disponible en:
+    ul
+      li /api/productores
+      li /api/lotes
+      li /api/observaciones
+      li /api/tecnicos
+      li /api/tipos-cultivo

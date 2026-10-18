@@ -61,6 +61,10 @@ app.use("/api/auth", authRoutes);
 // Vistas Pug adaptadas a Mongoose (async/await)
 const Lote = require("./models/Lote");
 const Observacion = require("./models/Observacion");
+const Productor = require("./models/Productor");
+const Tecnico = require("./models/Tecnico");
+const TipoCultivo = require("./models/TipoCultivo");
+const User = require("./models/User");
 
 app.get("/", (req, res) => {
   res.render("index", {
@@ -75,6 +79,45 @@ app.get("/vista/lotes", async (req, res) => {
     res.render("lotes", { title: "Listado de Lotes", lotes });
   } catch (error) {
     res.status(500).send("Error al cargar la vista de lotes");
+  }
+});
+
+app.get("/vista/productores", async (req, res) => {
+  try {
+    const productores = await Productor.find();
+    res.render("productores", { title: "Listado de Productores", productores });
+  } catch (error) {
+    res.status(500).send("Error al cargar la vista de productores");
+  }
+});
+
+app.get("/vista/tecnicos", async (req, res) => {
+  try {
+    const tecnicos = await Tecnico.find();
+    res.render("tecnicos", { title: "Listado de Técnicos", tecnicos });
+  } catch (error) {
+    res.status(500).send("Error al cargar la vista de técnicos");
+  }
+});
+
+app.get("/vista/tipos-cultivo", async (req, res) => {
+  try {
+    const tiposCultivo = await TipoCultivo.find();
+    res.render("tipos_cultivo", {
+      title: "Listado de Tipos de Cultivo",
+      tiposCultivo,
+    });
+  } catch (error) {
+    res.status(500).send("Error al cargar la vista de tipos de cultivo");
+  }
+});
+
+app.get("/vista/usuarios", async (req, res) => {
+  try {
+    const usuarios = await User.find();
+    res.render("usuarios", { title: "Listado de Usuarios", usuarios });
+  } catch (error) {
+    res.status(500).send("Error al cargar la vista de usuarios");
   }
 });
 

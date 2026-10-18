@@ -1,0 +1,35 @@
+doctype html
+html(lang="es")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title= title
+  body
+    h1= title
+    form(action="/", method="get")
+      button(type="submit") Inicio
+    form(action="/vista/productores", method="get")
+      button(type="submit") Productores
+    form(action="/vista/tecnicos", method="get")
+      button(type="submit") Técnicos
+    form(action="/vista/tipos-cultivo", method="get")
+      button(type="submit") Cultivos
+    form(action="/vista/lotes", method="get")
+      button(type="submit") Lotes
+    if usuarios.length > 0
+      table
+        thead
+          tr
+            th Usuario
+            th Nombre
+            th Apellido
+            th Email
+        tbody
+          each usuario in usuarios
+            tr
+              td= usuario.username
+              td= usuario.nombre
+              td= usuario.apellido
+              td= usuario.email
+    else
+      p No hay usuarios registrados.
