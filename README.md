@@ -156,7 +156,11 @@ Agrotec_PFO_E2/
 ├── views/
 │   ├── index.pug
 │   ├── lote_detalle.pug
-│   └── lotes.pug
+│   ├── lotes.pug
+│   ├── productores.pug
+│   ├── tecnicos.pug
+│   ├── tipos_cultivo.pug
+│   └── usuarios.pug
 ├── .env.example
 ├── .gitignore
 ├── app.js
@@ -173,11 +177,9 @@ Agrotec_PFO_E2/
 ### 1. Clonar el repositorio
 
 ```bash
-git clone https://github.com/LeonelDiaz225/Repo-Backend_2A.git
-cd Repo-Backend_2A
+git clone https://github.com/YohaOlivera/Agrotec_PFO_E2.git
+cd Agrotec_PFO_E2
 ```
-
-> El proyecto está disponible en la rama **`V.2.0`**.
 
 ### 2. Instalar dependencias
 
@@ -425,11 +427,19 @@ La aplicación persiste los datos en MongoDB mediante modelos Mongoose. Los arch
 
 ## Vistas con Pug (Server-Side Rendering)
 
-| Ruta                   | Vista              | Descripción                                                |
-| ---------------------- | ------------------ | ---------------------------------------------------------- |
-| `GET /`                | `index.pug`        | Página de bienvenida a AgroTec                             |
-| `GET /vista/lotes`     | `lotes.pug`        | Tabla con listado general de lotes y su productor asociado |
-| `GET /vista/lotes/:id` | `lote_detalle.pug` | Ficha del lote + historial de observaciones activas        |
+Las vistas se renderizan en el servidor con Pug y muestran tablas HTML básicas. Los listados no usan CSS propio; la vista de detalle del lote aplica estilos a las alertas de las observaciones. Los enlaces permiten navegar entre las vistas.
+
+| Ruta                          | Vista                 | Descripción                                                  |
+| ----------------------------- | --------------------- | ------------------------------------------------------------ |
+| `GET /`                       | `index.pug`           | Página de bienvenida y enlaces a las vistas y la API         |
+| `GET /vista/productores`      | `productores.pug`     | Tabla de productores, establecimientos y datos de contacto  |
+| `GET /vista/tecnicos`         | `tecnicos.pug`        | Tabla de técnicos, especialidades y datos de contacto       |
+| `GET /vista/tipos-cultivo`    | `tipos_cultivo.pug`   | Tabla del catálogo de tipos de cultivo                      |
+| `GET /vista/lotes`            | `lotes.pug`           | Tabla de lotes, productor asociado y botón para ver historial |
+| `GET /vista/lotes/:id`        | `lote_detalle.pug`    | Historial de observaciones activas del lote                 |
+| `GET /vista/usuarios`         | `usuarios.pug`        | Tabla de usuarios con nombre de usuario y datos de contacto  |
+
+La vista de usuarios no muestra contraseñas. Estas vistas son únicamente de consulta; las operaciones de escritura se realizan mediante la API REST.
 
 La vista `lote_detalle.pug` aplica estilos CSS según el nivel de alerta:
 

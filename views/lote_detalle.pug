@@ -4,17 +4,22 @@ html(lang="es")
     meta(charset="UTF-8")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
     title= title
+    style.
+      .alerta-Normal { color: green; }
+      .alerta-Atención { color: orange; font-weight: bold; }
+      .alerta-Crítico { color: red; font-weight: bold; }
   body
     h1= title
-    form(action="/vista/lotes", method="get")
-      button(type="submit") Volver a Lotes
+    a(href="/vista/lotes") Volver a Lotes
+    hr
     h2 Historial de Observaciones
     if observaciones.length > 0
-      table
+      table(border="1", cellpadding="5")
         thead
           tr
+            th ID
             th Fecha
-            th Técnico
+            th Técnico ID
             th Cultivo
             th Estado
             th Observaciones
@@ -22,11 +27,12 @@ html(lang="es")
         tbody
           each obs in observaciones
             tr
+              td= obs._id.toString().substring(0, 8) + '...'
               td= obs.fecha ? new Date(obs.fecha).toLocaleDateString('es-AR') : '-'
               td= obs.id_tecnico ? (obs.id_tecnico.nombre + ' ' + obs.id_tecnico.apellido) : 'N/A'
               td= obs.tipo_cultivo
               td= obs.estado_cultivo
               td= obs.observaciones
-              td= obs.nivel_alerta
+              td(class=`alerta-${obs.nivel_alerta.replace(' ', '')}`)= obs.nivel_alerta
     else
       p No hay observaciones registradas para este lote.
