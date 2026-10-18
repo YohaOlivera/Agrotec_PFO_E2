@@ -13,7 +13,7 @@
 | Recurso | Enlace |
 |---|---|
 | Carpeta de Drive | [Ver carpeta](modificar) |
-| Repositorio GitHub | [](https://cargarlink.com) |
+| Repositorio GitHub | [Ver repositorio](modificar) |
 | Video de presentación | [Ver video](modificar) |
 
 ---
@@ -48,7 +48,7 @@
 - **Tipos de cultivo** (catálogo base)
 - **Observaciones** realizadas por los técnicos, con historial trazable por lote
 
-El sistema expone una **API REST** para consumo de servicios y vistas básicas renderizadas con **Pug**.
+El sistema expone una **API REST** para consumo de servicios y vistas básicas renderizadas con **Pug**. También cuenta con un módulo de **autenticación** (registro e inicio de sesión de usuarios).
 
 ---
 
@@ -73,8 +73,11 @@ Esta solución **centraliza los datos**, garantiza la **integridad referencial**
 | **Pug** | Motor de plantillas server-side para vistas básicas |
 | **MongoDB** | Base de datos documental |
 | **Mongoose** | Modelos, validación y acceso a MongoDB |
-| **path** (nativo de Node) | Manejo de rutas |
-| **JavaScript ES6+ (CommonJS)** | POO, herencia y modularización |
+| **dotenv** | Gestión de variables de entorno |
+| **swagger-jsdoc + swagger-ui-express** | Documentación interactiva de la API (OpenAPI 3.0) |
+| **migrate-mongo** | Gestión de migraciones de esquema en MongoDB |
+| **path** (nativo de Node) | Manejo de rutas de sistema de archivos |
+| **JavaScript ES6+ (CommonJS)** | Módulos, desestructuración, async/await |
 | **npm** | Gestión de dependencias y scripts |
 | **Postman / Thunder Client** | Testing manual de endpoints |
 | **Git / GitHub** | Control de versiones y colaboración |
@@ -83,20 +86,25 @@ Esta solución **centraliza los datos**, garantiza la **integridad referencial**
 
 ## Arquitectura y organización del proyecto
 
-El proyecto sigue un patrón **MVC (Modelo – Vista – Controlador)** complementado con principios de **Programación Orientada a Objetos**:
+El proyecto sigue un patrón **MVC (Modelo – Vista – Controlador)**:
 
-- **Clase base `Persona`** → heredada por `Productor` y `Tecnico`
-- **Mongoose** → capa de persistencia y validación de esquemas en MongoDB
-- **Modelos** (`Lote`, `Observacion`, `TipoCultivo`, entre otros) → definen los documentos de la aplicación
+- **Modelos Mongoose** (`Productor`, `Tecnico`, `Lote`, `Observacion`, `TipoCultivo`, `User`) → definen los documentos, esquemas y validaciones a nivel de base de datos.
+- **Controladores** → procesan cada petición HTTP, aplican validaciones de negocio y devuelven la respuesta.
+- **Rutas** → mapean los endpoints HTTP a sus controladores correspondientes.
+- **Vistas Pug** → renderizado server-side para consulta visual en el navegador.
 
 | Elemento | Función |
 |---|---|
-| `app.js` | Configura Express, Pug, middlewares, rutas, manejo de errores e inicio del servidor |
+| `app.js` | Configura Express, Pug, middlewares, rutas, Swagger, manejo de errores e inicio del servidor |
+| `config/` | Conexión a MongoDB (`db.js`) y configuración DNS (`mongo-dns.js`) |
 | `routes/` | Define endpoints y métodos HTTP por recurso |
 | `controllers/` | Procesa peticiones, valida datos y devuelve respuestas HTTP |
-| `models/` | Esquemas Mongoose y lógica de acceso a MongoDB |
-| `data/` | Datos JSON heredados |
+| `models/` | Esquemas Mongoose con validaciones integradas |
+| `migrations/` | Migraciones de esquema administradas con `migrate-mongo` |
+| `scripts/` | Script de seed para poblar la base con datos iniciales |
+| `data/` | Archivos JSON con datos de origen para el seed |
 | `views/` | Plantillas Pug para las vistas del navegador |
+| `assets/` | Imágenes y documentos del proyecto |
 | `package.json` | Metadatos, scripts y dependencias |
 
 ---
@@ -104,9 +112,18 @@ El proyecto sigue un patrón **MVC (Modelo – Vista – Controlador)** compleme
 ## Estructura de carpetas
 
 ```
-Repo-Backend_2A-V.2.0/
+Agrotec_PFO_E2/
 ├── assets/
+│   ├── DSWB_2A_YodaLabs-Informe_2C26.docx
+│   ├── DSWB_2A_YodaLabs-SegundaEntrega.docx
+│   ├── Img1.JPG
+│   ├── Img2.JPG
+│   └── YodaLabs.png
+├── config/
+│   ├── db.js
+│   └── mongo-dns.js
 ├── controllers/
+│   ├── authController.js
 │   ├── lotesController.js
 │   ├── observacionesController.js
 │   ├── productoresController.js
@@ -118,26 +135,33 @@ Repo-Backend_2A-V.2.0/
 │   ├── productores.json
 │   ├── tecnicos.json
 │   └── tipos_cultivo.json
+├── migrations/
+│   ├── 20261012170000-create-initial-collections.js
+│   └── 20261012190000-seed-initial-data.js
 ├── models/
-│   ├── JsonManager.js
 │   ├── Lote.js
 │   ├── Observacion.js
-│   ├── Persona.js
 │   ├── Productor.js
 │   ├── Tecnico.js
-│   └── TipoCultivo.js
+│   ├── TipoCultivo.js
+│   └── User.js
 ├── routes/
+│   ├── authRoutes.js
 │   ├── lotesRoutes.js
 │   ├── observacionesRoutes.js
 │   ├── productoresRoutes.js
 │   ├── tecnicosRoutes.js
 │   └── tiposCultivoRoutes.js
+├── scripts/
+│   └── seed.js
 ├── views/
 │   ├── index.pug
 │   ├── lote_detalle.pug
 │   └── lotes.pug
+├── .env.example
 ├── .gitignore
 ├── app.js
+├── migrate-mongo-config.js
 ├── package-lock.json
 ├── package.json
 └── README.md
@@ -172,6 +196,13 @@ Copy-Item .env.example .env
 
 `.env` es local y no debe subirse a Git. La plantilla usa MongoDB local (`127.0.0.1`).
 
+Contenido del `.env.example`:
+
+```
+PORT=3000
+MONGO_URI=mongodb://127.0.0.1:27017/agrotec
+```
+
 ### 4. Ejecutar el servidor en desarrollo
 
 ```bash
@@ -184,15 +215,15 @@ El servidor quedará disponible en:
 http://localhost:3000
 ```
 
-### 5. Iniciar en producción
+La documentación interactiva Swagger estará en:
 
-Crea `prod.env` desde su plantilla y reemplaza el usuario, la clave y el hostname por los datos de conexión de Atlas:
-
-```powershell
-Copy-Item prod.env.example prod.env
+```
+http://localhost:3000/api-docs
 ```
 
-Codifica los caracteres especiales de la contraseña para usarlos en la URI. `prod.env` es local y no debe subirse a Git. Inicia la aplicación con:
+### 5. Iniciar en producción
+
+Crea `prod.env` con los datos de conexión de MongoDB Atlas y ejecuta:
 
 ```bash
 npm run start:prod
@@ -200,13 +231,13 @@ npm run start:prod
 
 ### Migraciones de MongoDB
 
-Las migraciones se administran con `migrate-mongo`. En desarrollo, los comandos cargan `.env`; los comandos con sufijo `:prod` cargan `prod.env`. Ambos usan `MONGO_DB_NAME` si está definido y, de lo contrario, la base `agrotec`.
+Las migraciones se administran con `migrate-mongo`. Los comandos en desarrollo usan `.env`; los comandos con sufijo `:prod` usan `prod.env`.
 
 ```bash
 # Crear una migración nueva
 npm run migrate:create -- agregar-campo
 
-# Aplicar, revertir la última o consultar el estado en desarrollo
+# Aplicar, revertir o consultar el estado en desarrollo
 npm run migrate:up
 npm run migrate:down
 npm run migrate:status
@@ -216,135 +247,129 @@ npm run migrate:up:prod
 npm run migrate:status:prod
 ```
 
-La migración inicial crea las colecciones de los modelos que todavía no existan y aplica el índice único del nombre del tipo de cultivo. Si ya hay nombres duplicados, MongoDB rechazará ese índice y habrá que resolver los duplicados antes de reintentar. Su reversión no elimina colecciones, índices ni datos. Ejecutá las migraciones de producción solo cuando quieras modificar esa base.
+### Seed de datos iniciales
 
-Para cargar los datos JSON de `data/` en MongoDB, primero puedes validar su formato y referencias y luego ejecutar el seed:
+El script `seed.js` carga los archivos JSON de `data/` en MongoDB. Primero podés validar las referencias y luego ejecutar el seed:
 
 ```bash
+# Validar los datos del seed sin conectarse a la base
 node scripts/seed.js --check
-npm run migrate:up:prod
+
+# Ejecutar seed en desarrollo
 npm run seed
+
+# Ejecutar seed en producción
 npm run seed:prod
 ```
 
-El seed es idempotente: puedes ejecutarlo de nuevo para actualizar los registros que administra sin vaciar colecciones ni eliminar otros documentos. Usa identificadores estables para productores, técnicos, lotes y observaciones; los tipos de cultivo se actualizan por nombre. Antes de ejecutarlo contra producción, verifica la conexión y la base seleccionada.
+El seed es **idempotente**: puede ejecutarse múltiples veces sin duplicar datos.
 
 ---
 
 ## Modelo de datos
 
-La aplicación actual persiste los datos en MongoDB mediante los modelos Mongoose. Los archivos JSON de `data/` y sus ejemplos de abajo describen el formato heredado; no son importados automáticamente. Las migraciones de esquema se gestionan con `migrate-mongo`.
+La aplicación persiste los datos en MongoDB mediante modelos Mongoose. Los archivos JSON de `data/` se usan exclusivamente como fuente para el seed inicial.
 
-### `productores.json`
-
-```json
-[
-  {
-    "id": 1,
-    "nombre": "Juan",
-    "apellido": "Pérez",
-    "telefono": "1122334455",
-    "email": "juan.perez@agrotec.com",
-    "establecimiento": "Estancia El Ombú"
-  }
-]
-```
-
-### `lotes.json`
+### `productores` — Modelo `Productor`
 
 ```json
-[
-  {
-    "id": 1,
-    "nombre_numero": "Lote 45 Sur",
-    "id_productor": 1
-  },
-  {
-    "id": 2,
-    "nombre_numero": "Lote 99 Norte",
-    "id_productor": 1
-  }
-]
+{
+  "_id": "ObjectId",
+  "nombre": "Juan",
+  "apellido": "Pérez",
+  "telefono": "1122334455",
+  "email": "juan.perez@agrotec.com",
+  "establecimiento": "Estancia El Ombú",
+  "createdAt": "...",
+  "updatedAt": "..."
+}
 ```
 
-### `tecnicos.json`
+### `lotes` — Modelo `Lote`
 
 ```json
-[
-  {
-    "id": 1,
-    "nombre": "Juan",
-    "apellido": "Pérez",
-    "telefono": "1144556677",
-    "email": "juan.tecnico@agrotec.com",
-    "especialidad": "Agronomía general"
-  },
-  {
-    "id": 2,
-    "nombre": "María",
-    "apellido": "Gómez",
-    "telefono": "1188990011",
-    "email": "maria.gomez@agrotec.com",
-    "especialidad": "Control de plagas"
-  }
-]
+{
+  "_id": "ObjectId",
+  "nombre_numero": "Lote 45 Sur",
+  "id_productor": "ObjectId (ref: Productor)",
+  "createdAt": "...",
+  "updatedAt": "..."
+}
 ```
 
-### `tipos_cultivo.json`
+### `tecnicos` — Modelo `Tecnico`
 
 ```json
-[
-  { "id": 1, "nombre": "Soja" },
-  { "id": 2, "nombre": "Maíz" },
-  { "id": 3, "nombre": "Trigo" }
-]
+{
+  "_id": "ObjectId",
+  "nombre": "María",
+  "apellido": "Gómez",
+  "telefono": "1188990011",
+  "email": "maria.gomez@agrotec.com",
+  "especialidad": "Control de plagas",
+  "createdAt": "...",
+  "updatedAt": "..."
+}
 ```
 
-### `observaciones.json`
+### `tiposcultivos` — Modelo `TipoCultivo`
 
 ```json
-[
-  {
-    "id": 1,
-    "id_lote": 1,
-    "id_tecnico": 1,
-    "fecha": "2026-09-10",
-    "tipo_cultivo": "Soja",
-    "estado_cultivo": "En crecimiento",
-    "observaciones": "Se detectó leve sequía en el sector norte.",
-    "nivel_alerta": "Atención",
-    "activa": true
-  },
-  {
-    "id": 2,
-    "id_lote": 1,
-    "id_tecnico": 1,
-    "fecha": "2026-09-15",
-    "tipo_cultivo": "Soja",
-    "estado_cultivo": "Brote",
-    "observaciones": "Nivel de humedad adecuado.",
-    "nivel_alerta": "Normal",
-    "activa": true
-  },
-  {
-    "id": 3,
-    "id_lote": 1,
-    "id_tecnico": 1,
-    "fecha": "2026-09-16",
-    "tipo_cultivo": "Soja",
-    "estado_cultivo": "Brote",
-    "observaciones": "Nivel de humedad adecuado.",
-    "nivel_alerta": "Crítico",
-    "activa": false
-  }
-]
+{
+  "_id": "ObjectId",
+  "nombre": "Soja",
+  "createdAt": "...",
+  "updatedAt": "..."
+}
 ```
 
-> **Soft delete**: el campo `activa: false` indica que la observación fue "eliminada" lógicamente. Las consultas (`getAll`, `getById`, `getByLote`, `getByNivelAlerta`) filtran automáticamente los registros con `activa === false`.
+> El campo `nombre` es único (índice único en MongoDB).
+
+### `observaciones` — Modelo `Observacion`
+
+```json
+{
+  "_id": "ObjectId",
+  "id_lote": "ObjectId (ref: Lote)",
+  "id_tecnico": "ObjectId (ref: Tecnico)",
+  "fecha": "2026-09-10T00:00:00.000Z",
+  "tipo_cultivo": "Soja",
+  "estado_cultivo": "En crecimiento",
+  "observaciones": "Se detectó leve sequía en el sector norte.",
+  "nivel_alerta": "Atención",
+  "activa": true,
+  "createdAt": "...",
+  "updatedAt": "..."
+}
+```
+
+> **Soft delete**: el campo `activa: false` indica que la observación fue dada de baja lógicamente. Las consultas (`getAll`, `getById`, filtros por alerta) retornan solo registros con `activa: true`.
+
+### `users` — Modelo `User`
+
+```json
+{
+  "_id": "ObjectId",
+  "username": "admin",
+  "password": "123456",
+  "nombre": "Administrador",
+  "apellido": "Sistema",
+  "email": "admin@agrotec.com",
+  "createdAt": "...",
+  "updatedAt": "..."
+}
+```
 
 ---
 
 ## Endpoints de la API
+
+### Autenticación — `/api/auth`
+
+| Método | Endpoint | Body | Descripción |
+|---|---|---|---|
+| POST | `/api/auth/register` | `{ username, password, nombre, apellido, email }` | Registra un nuevo usuario |
+| POST | `/api/auth/login` | `{ username, password }` | Inicia sesión y devuelve los datos del usuario |
 
 ### Productores — `/api/productores`
 
@@ -360,9 +385,9 @@ La aplicación actual persiste los datos en MongoDB mediante los modelos Mongoos
 
 | Método | Endpoint | Body / Query | Descripción |
 |---|---|---|---|
-| GET | `/api/lotes` | `?alerta=Normal\|Atención\|Crítico` | Lista lotes (admite filtro por nivel de alerta) |
+| GET | `/api/lotes` | `?alerta=Normal\|Atención\|Crítico` | Lista lotes (admite filtro por nivel de alerta activa) |
 | GET | `/api/lotes/:id` | — | Obtiene un lote por ID |
-| GET | `/api/lotes/:id/observaciones` | — | Historial cronológico de observaciones del lote |
+| GET | `/api/lotes/:id/observaciones` | — | Historial de observaciones activas del lote |
 | POST | `/api/lotes` | `{ nombre_numero, id_productor }` | Crea un lote (valida que el productor exista) |
 | PUT | `/api/lotes/:id` | `{ nombre_numero, id_productor }` | Actualiza un lote |
 | DELETE | `/api/lotes/:id` | — | Elimina un lote |
@@ -374,7 +399,8 @@ La aplicación actual persiste los datos en MongoDB mediante los modelos Mongoos
 | GET | `/api/observaciones` | — | Lista observaciones activas |
 | GET | `/api/observaciones/:id` | — | Obtiene una observación activa por ID |
 | POST | `/api/observaciones` | `{ id_lote, id_tecnico, fecha, tipo_cultivo, estado_cultivo, observaciones, nivel_alerta }` | Registra una observación |
-| DELETE | `/api/observaciones/:id` | — | Borrado lógico (*soft delete*) |
+| PUT | `/api/observaciones/:id` | `{ id_lote, id_tecnico, fecha, tipo_cultivo, estado_cultivo, observaciones, nivel_alerta }` | Actualiza una observación activa |
+| DELETE | `/api/observaciones/:id` | — | Borrado lógico (*soft delete*): marca `activa: false` |
 
 ### Técnicos — `/api/tecnicos`
 
@@ -403,7 +429,7 @@ La aplicación actual persiste los datos en MongoDB mediante los modelos Mongoos
 | Ruta | Vista | Descripción |
 |---|---|---|
 | `GET /` | `index.pug` | Página de bienvenida a AgroTec |
-| `GET /vista/lotes` | `lotes.pug` | Tabla con listado general de lotes |
+| `GET /vista/lotes` | `lotes.pug` | Tabla con listado general de lotes y su productor asociado |
 | `GET /vista/lotes/:id` | `lote_detalle.pug` | Ficha del lote + historial de observaciones activas |
 
 La vista `lote_detalle.pug` aplica estilos CSS según el nivel de alerta:
@@ -426,7 +452,7 @@ El sistema implementa las siguientes consultas específicas solicitadas por el n
 GET /api/lotes/:id/observaciones
 ```
 
-Devuelve todas las observaciones **activas** asociadas al lote indicado.
+Devuelve todas las observaciones **activas** asociadas al lote indicado, con el técnico responsable populado.
 
 ### 2. Búsqueda de lotes por nivel de alerta
 
@@ -434,7 +460,7 @@ Devuelve todas las observaciones **activas** asociadas al lote indicado.
 GET /api/lotes?alerta=Crítico
 ```
 
-Filtra los lotes que tengan al menos una observación activa con el nivel de alerta indicado.
+Filtra los lotes que tengan al menos una observación activa con el nivel de alerta indicado. Los valores posibles son `Normal`, `Atención` y `Crítico`.
 
 ### 3. Consulta de observaciones activas
 
@@ -448,11 +474,13 @@ Devuelve únicamente las observaciones cuyo campo `activa` sea `true`, respetand
 
 ## Reglas de negocio y validaciones
 
-### Capa de dominio (POO)
+### Validaciones a nivel de esquema Mongoose
 
-- **`Persona`**: `nombre` y `apellido` deben ser strings no vacíos.
-- **`Lote`**: `nombre_numero` válido + `id_productor` numérico obligatorio.
-- **`TipoCultivo`**: `nombre` no puede estar en blanco.
+- **`Productor` / `Tecnico`**: `nombre` y `apellido` son campos requeridos.
+- **`Lote`**: `nombre_numero` y `id_productor` son requeridos.
+- **`Observacion`**: `id_lote`, `id_tecnico`, `fecha`, `tipo_cultivo` y `nivel_alerta` son requeridos. El `nivel_alerta` solo acepta `"Normal"`, `"Atención"` o `"Crítico"` (enum).
+- **`TipoCultivo`**: `nombre` es requerido y único (índice único).
+- **`User`**: `username` y `email` son únicos; `username` tiene mínimo 3 caracteres; `password` tiene mínimo 6 caracteres; `email` se valida con regex.
 
 ### Integridad referencial (controllers)
 
@@ -460,9 +488,10 @@ Devuelve únicamente las observaciones cuyo campo `activa` sea `true`, respetand
 - **Observación → Lote / Técnico / TipoCultivo**: se validan secuencialmente:
   - El `id_lote` debe existir.
   - El `id_tecnico` debe existir.
-  - El `tipo_cultivo` debe estar en el catálogo.
+  - El `tipo_cultivo` debe estar en el catálogo de `TipoCultivo`.
 - **Fecha**: se valida con `Date.parse(fecha)`.
 - **Nivel de alerta**: solo se admiten `"Normal"`, `"Atención"` o `"Crítico"`.
+- **Formato de ID**: todos los parámetros `:id` se validan con `mongoose.Types.ObjectId.isValid()` antes de consultar la base.
 - **Inmutabilidad de auditoría**: las observaciones **no se eliminan físicamente**; se aplica *soft delete* asignando `activa: false`.
 
 ---
@@ -474,6 +503,7 @@ Devuelve únicamente las observaciones cuyo campo `activa` sea `true`, respetand
 | **200 OK** | Consultas y actualizaciones exitosas |
 | **201 Created** | Creación exitosa de un recurso |
 | **400 Bad Request** | Falta de campos obligatorios, tipos incorrectos, alertas inválidas o violación de integridad referencial |
+| **401 Unauthorized** | Credenciales incorrectas en el login |
 | **404 Not Found** | Recurso inexistente por `:id` o ruta no encontrada (middleware global) |
 | **500 Internal Server Error** | Excepciones no controladas o fallos de lectura/escritura (middleware global) |
 
@@ -487,37 +517,158 @@ Todas las respuestas de error se devuelven en formato JSON:
 
 ## Pruebas de endpoints
 
-Las pruebas se realizaron con **Postman** y **Thunder Client**. Algunos casos verificados:
+Las pruebas se realizaron con **Postman** y **Thunder Client**.
 
-### Crear lote (éxito)
+> **Nota:** los IDs usados en los ejemplos son ObjectIds de MongoDB. Al ejecutar el seed con `npm run seed`, los IDs generados serán distintos. Usá `GET /api/productores`, `GET /api/tecnicos`, etc. para obtener los IDs reales de tu base.
 
-- **Endpoint**: `POST /api/lotes`
-- **Body**:
-```json
-{ "nombre_numero": "Lote 99 Norte", "id_productor": 1 }
-```
-- **Respuesta**: `201 Created`
+---
 
-### Crear lote con productor inexistente
+### Autenticación
 
-- **Endpoint**: `POST /api/lotes`
-- **Body**:
-```json
-{ "nombre_numero": "Lote 99 Este", "id_productor": 5 }
-```
-- **Respuesta**: `400 Bad Request`
-```json
-{ "error": "El id_productor proporcionado no existe" }
-```
+#### Registrar usuario (éxito)
 
-### Registrar observación
-
-- **Endpoint**: `POST /api/observaciones`
-- **Body**:
+- **Endpoint:** `POST /api/auth/register`
+- **Body:**
 ```json
 {
-  "id_lote": 1,
-  "id_tecnico": 1,
+  "username": "admin",
+  "password": "123456",
+  "nombre": "Administrador",
+  "apellido": "Sistema",
+  "email": "admin@agrotec.com"
+}
+```
+- **Respuesta:** `201 Created`
+```json
+{
+  "mensaje": "Usuario registrado con éxito",
+  "usuario": {
+    "id": "68123abc4567def890123456",
+    "username": "admin",
+    "nombre": "Administrador",
+    "apellido": "Sistema",
+    "email": "admin@agrotec.com"
+  }
+}
+```
+
+#### Iniciar sesión (éxito)
+
+- **Endpoint:** `POST /api/auth/login`
+- **Body:**
+```json
+{ "username": "admin", "password": "123456" }
+```
+- **Respuesta:** `200 OK`
+```json
+{
+  "mensaje": "Inicio de sesión exitoso",
+  "usuario": {
+    "id": "68123abc4567def890123456",
+    "username": "admin",
+    "nombre": "Administrador",
+    "apellido": "Sistema",
+    "email": "admin@agrotec.com"
+  }
+}
+```
+
+#### Iniciar sesión con credenciales incorrectas
+
+- **Respuesta:** `401 Unauthorized`
+```json
+{ "error": "Usuario o contraseña incorrectos" }
+```
+
+---
+
+### Productores
+
+#### Crear productor (éxito)
+
+- **Endpoint:** `POST /api/productores`
+- **Body:**
+```json
+{
+  "nombre": "Juan",
+  "apellido": "Pérez",
+  "telefono": "1122334455",
+  "email": "juan.perez@agrotec.com",
+  "establecimiento": "Estancia El Ombú"
+}
+```
+- **Respuesta:** `201 Created`
+
+#### Crear productor sin campos obligatorios
+
+- **Body:** `{ "telefono": "1122334455" }`
+- **Respuesta:** `400 Bad Request`
+```json
+{ "error": "El nombre y el apellido son obligatorios" }
+```
+
+---
+
+### Lotes
+
+#### Crear lote (éxito)
+
+- **Endpoint:** `POST /api/lotes`
+- **Body:**
+```json
+{
+  "nombre_numero": "Lote 45 Sur",
+  "id_productor": "68123abc4567def890123401"
+}
+```
+- **Respuesta:** `201 Created`
+
+#### Crear lote con productor inexistente
+
+- **Body:**
+```json
+{
+  "nombre_numero": "Lote 99 Este",
+  "id_productor": "68123abc4567def890000000"
+}
+```
+- **Respuesta:** `400 Bad Request`
+```json
+{ "error": "El Id productor no existe" }
+```
+
+#### Crear lote con ID de productor con formato inválido
+
+- **Respuesta:** `400 Bad Request`
+```json
+{ "error": "ID de productor no válido" }
+```
+
+#### Filtrar lotes por nivel de alerta
+
+- **Endpoint:** `GET /api/lotes?alerta=Crítico`
+- **Respuesta:** `200 OK` — array con los lotes que tienen observaciones activas en nivel `Crítico`
+
+#### Filtrar lotes con alerta inválida
+
+- **Endpoint:** `GET /api/lotes?alerta=Grave`
+- **Respuesta:** `400 Bad Request`
+```json
+{ "error": "Nivel de alerta inválido. Debe ser \"Normal\", \"Atención\" o \"Crítico\"" }
+```
+
+---
+
+### Observaciones
+
+#### Registrar observación (éxito)
+
+- **Endpoint:** `POST /api/observaciones`
+- **Body:**
+```json
+{
+  "id_lote": "68123abc4567def890123402",
+  "id_tecnico": "68123abc4567def890123403",
   "fecha": "2026-09-15",
   "tipo_cultivo": "Soja",
   "estado_cultivo": "Brote",
@@ -525,36 +676,38 @@ Las pruebas se realizaron con **Postman** y **Thunder Client**. Algunos casos ve
   "nivel_alerta": "Normal"
 }
 ```
-- **Respuesta**: `201 Created`
+- **Respuesta:** `201 Created`
 
-### Registrar observación con alerta inválida
+#### Registrar observación con nivel de alerta inválido
 
-- **Respuesta**: `400 Bad Request`
+- **Respuesta:** `400 Bad Request`
 ```json
-{ "error": "El nivel_alerta debe ser \"Normal\", \"Atención\" o \"Crítico\"" }
+{ "error": "El nivel de alerta debe ser \"Normal\", \"Atención\" o \"Crítico\"" }
 ```
 
-### Registrar observación sin fecha
+#### Registrar observación sin fecha
 
-- **Respuesta**: `400 Bad Request`
+- **Respuesta:** `400 Bad Request`
 ```json
-{ "error": "id_lote, id_tecnico, fecha, tipo_cultivo y nivel_alerta son obligatorios" }
+{ "error": "Id lote, Id técnico, fecha, tipo de cultivo y nivel de alerta son obligatorios" }
 ```
 
-### Eliminar observación (soft delete)
+#### Registrar observación con tipo de cultivo inexistente en el catálogo
 
-- **Endpoint**: `DELETE /api/observaciones/3`
-- **Respuesta**: `200 OK`
+- **Respuesta:** `400 Bad Request`
 ```json
-{ "mensaje": "Observación eliminada (soft delete) correctamente" }
+{ "error": "El tipo de cultivo 'Algodón' no existe en el catálogo de cultivos" }
 ```
 
-El registro permanece en `observaciones.json` con `activa: false`.
+#### Dar de baja una observación (soft delete)
 
-### Filtrar lotes por alerta
+- **Endpoint:** `DELETE /api/observaciones/68123abc4567def890123404`
+- **Respuesta:** `200 OK`
+```json
+{ "mensaje": "Observación dada de baja correctamente" }
+```
 
-- **Endpoint**: `GET /api/lotes?alerta=Crítico`
-- **Respuesta**: `200 OK`
+> El registro permanece en la base de datos con `activa: false` y queda excluido de todas las consultas activas.
 
 ---
 
@@ -562,20 +715,21 @@ El registro permanece en `observaciones.json` con `activa: false`.
 
 | Integrante | Responsabilidades |
 |---|---|
-| **Yohana Olivera** | Modelado de dominio y POO: clase base `Persona` y herencia hacia `Productor` y `Tecnico`. Refactorización de `Lote` y `Observacion`. |
+| **Yohana Olivera** | Modelado de dominio: esquemas Mongoose de `Productor` y `Tecnico`. Validaciones a nivel de modelo. |
 | **Itziar Urriola** | Configuración del servidor y entorno: Express, middlewares, ruteo central en `app.js`, gestión de dependencias en `package.json`. |
-| **Melisa Salano** | Capa de persistencia: `JsonManager` (lectura/escritura/IDs). Módulo de Tipos de Cultivo (`TipoCultivo.js` + `tiposCultivoController.js`). |
+| **Melisa Salano** | Módulo de Tipos de Cultivo (`TipoCultivo.js` + `tiposCultivoController.js`). Módulo de Autenticación (`User.js` + `authController.js`). |
 | **Maximiliano Millar** | Controlador de Observaciones y lógica de negocio. Implementación del *soft delete* para preservar el historial. |
-| **Leonel Diaz** | Controlador de Lotes (CRUD + filtro por alerta). Vistas Pug (`index.pug`, `lotes.pug`, `lote_detalle.pug`). |
+| **Leonel Diaz** | Controlador de Lotes (CRUD + filtro por alerta + historial). Vistas Pug (`index.pug`, `lotes.pug`, `lote_detalle.pug`). |
 
 ---
 
 ## Próximas mejoras
 
-- **Autenticación y autorización** con roles (administrador, productor, técnico) mediante JWT
+- **Hashing de contraseñas** con `bcrypt` para almacenamiento seguro de credenciales
+- **Autenticación con JWT** y protección de rutas mediante middleware
+- **Roles y autorización** (administrador, productor, técnico)
 - **Módulo de estadísticas y reportes** (métricas por lote, exportación a PDF/Excel)
 - **Geolocalización de lotes** con mapas interactivos
-- **Middlewares dedicados de validación** (reemplazando las validaciones actuales en controllers)
 
 ---
 
